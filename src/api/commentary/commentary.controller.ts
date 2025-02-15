@@ -1,19 +1,22 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { CommentaryService } from './commentary.service';
 
-@Controller("commentary")
+@Controller('commentary')
 export class CommentaryController {
   constructor(private readonly commentaryService: CommentaryService) {}
 
-  @Delete(":id")
-  async deleteCommentary() {}
+  @Put(':id')
+  async updateCommentary(@Param('id') id: string) {
+    return await this.commentaryService.updateCommentary();
+  }
 
-  @Post()
-  async createCommentary() {}
+  @Delete(':id')
+  async deleteCommentary(@Param('id') id: string) {
+    return await this.commentaryService.deleteCommentary();
+  }
 
-  @Put(":id")
-  async updateCommentary() {}
-
-  @Post(":id/react")
-  async reactCommentary() {}
+  @Post(':id/react')
+  async reactCommentary(@Param('id') id: string) {
+    return await this.commentaryService.addCommentaryReaction();
+  }
 }

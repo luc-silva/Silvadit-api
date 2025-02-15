@@ -3,14 +3,22 @@ import { CommentaryRepository } from './commentary.repository';
 
 @Injectable()
 export class CommentaryService {
-   constructor(private commentaryRepository: CommentaryRepository){}
-  async getPosts() {}
+  constructor(private commentaryRepository: CommentaryRepository) {}
 
-  async createPost() {}
 
-  async updatePost() {}
+  async updateCommentary() {
+    return await this.commentaryRepository.updateCommentary();
+  }
 
-  async deletePost() {}
+  async deleteCommentary() {
+    return await this.commentaryRepository.deleteCommentary();
+  }
 
-  async reactPost() {}
+  async addCommentaryReaction() {
+    return await this.commentaryRepository.addCommentaryReaction();
+  }
+
+  async deleteCommentaryReaction() {
+    return await this.commentaryRepository.deleteCommentaryReaction();
+  }
 }
