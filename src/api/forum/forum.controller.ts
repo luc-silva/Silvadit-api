@@ -1,10 +1,43 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ForumService } from './forum.service';
+import {
+  BanUserDTO,
+  CreateForumDataDTO,
+  FollowForumDataDTO,
+  UnfollowForumDataDTO,
+} from './forum.dto';
 
-@Controller("forum")
+@Controller('forum')
 export class ForumController {
   constructor(private readonly forumService: ForumService) {}
 
-  @Get(":id")
-  async getHello() {}
+  @Get()
+  async getTrandingForums() {
+    return await this.forumService.getTrendingForums();
+  }
+
+  @Get(':id')
+  async getForumDetails(@Param('id') id: string) {
+    return await this.forumService.getForumDetails(id);
+  }
+
+  @Post('follow')
+  async followForum(@Body() body: FollowForumDataDTO) {
+    return await this.forumService.followForum(body);
+  }
+
+  @Post('unfollow')
+  async unfollowForum(@Body() body: UnfollowForumDataDTO) {
+    return await this.forumService.unfollowForum(body);
+  }
+
+  @Post('ban-user')
+  async banUserFromForum(@Body() body: BanUserDTO) {
+    return await this.forumService.banUserFromForum(body);
+  }
+
+  @Post()
+  async createForum(@Body() body: CreateForumDataDTO) {
+    return await this.forumService.createForum(body);
+  }
 }
