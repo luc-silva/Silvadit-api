@@ -10,7 +10,7 @@ export class OracleDatabase {
     this.database_settings = config;
   }
 
-  async connect(
+  private async connect(
     config: OracleDB.ConnectionAttributes,
   ): Promise<OracleDB.Connection> {
     const conn = await oracledb.getConnection(config);
