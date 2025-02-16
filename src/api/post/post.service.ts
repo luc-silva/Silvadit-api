@@ -29,12 +29,12 @@ export class PostService {
     return await this.postRepository.createPost(parsedData);
   }
 
-  async updatePost(body: UpdatePostDTO, id: string) {
+  async updatePost(body: UpdatePostDTO) {
     const parsedData: IUpdatePostData = {
       ...body,
       is_nsfw: body.is_nsfw ? 'S' : 'N',
     };
-    return await this.postRepository.updatePost(parsedData, id);
+    return await this.postRepository.updatePost(parsedData );
   }
 
   async deletePost(body: DeletePostDTO) {
@@ -56,5 +56,9 @@ export class PostService {
 
   async createPostCommentary(body: CreatePostCommentaryDTO) {
     return await this.commentaryRepository.createCommentary(body);
+  }
+
+  async getPostDetails(id: string) {
+    return await this.postRepository.getPostDetails({ post_id: id });
   }
 }

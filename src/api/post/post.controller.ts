@@ -16,19 +16,23 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get(':id')
-  async getPosts(@Param('id') id: string) {}
+  async getPosts(@Param('id') id: string) {
+    return await this.postService.getPostDetails(id);
+  }
 
   @Delete(':id')
-  async deletePost(@Param('id') id: string) {}
+  async deletePost(@Param('id') post_id: string) {
+    return await this.postService.deletePost({ post_id });
+  }
 
   @Post('create')
   async createPost(@Body() body: CreatePostDTO) {
     return await this.postService.createPostCommentary(body);
   }
 
-  @Put(':id')
-  async updatePost(@Param('id') id: string, @Body() body: UpdatePostDTO) {
-    return await this.postService.updatePost(body, id);
+  @Put()
+  async updatePost(@Body() body: UpdatePostDTO) {
+    return await this.postService.updatePost(body);
   }
 
   @Post('react')

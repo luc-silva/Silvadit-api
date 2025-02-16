@@ -16,4 +16,24 @@ interface IReactPostData {
 interface IUpdatePostData {
   content: string;
   is_nsfw: 'S' | 'N';
+  post_id: string;
+}
+
+interface IGetPostDetails {
+  post_id: string;
+}
+
+interface IDeletePostData {
+  post_id: string;
+}
+
+interface IBookmarkPostData {
+  post_id: string;
+  user_id: string;
+  date_created: string;
+}
+
+interface IUnbookmarkPostData {
+  post_id: string;
+  user_id: string;
 }

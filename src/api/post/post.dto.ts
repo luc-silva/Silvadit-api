@@ -47,4 +47,31 @@ export class UpdatePostDTO {
 
   @IsBoolean()
   is_nsfw: boolean;
+
+  @IsString()
+  post_id: string;
+}
+
+export class GetPostsDTO {
+  @IsString()
+  user_id?: string;
+}
+
+export class IBookmarkPostData {
+  @IsString()
+  post_id: string;
+
+  @IsString()
+  user_id: string;
+
+  @IsString()
+  date_created: string;
+}
+
+export class IUnbookmarkPostData {
+  @IsString()
+  post_id: string;
+
+  @IsString()
+  user_id: string;
 }
