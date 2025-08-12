@@ -1,24 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { CommentaryRepository } from './commentary.repository';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  ReactCommentaryDataDTO,
+  UpdateCommentaryDataDTO,
+} from './types/commentary.dto';
+import { COMMENTARY_REPOSITORY_TOKEN, CommentaryRepositoryBase } from './repository/commentary.repository.base';
+import { CommentaryRepository } from './repository/commentary.repository';
 
 @Injectable()
 export class CommentaryService {
-  constructor(private commentaryRepository: CommentaryRepository) {}
+  constructor(
+    @Inject(COMMENTARY_REPOSITORY_TOKEN)
+    private readonly commentaryRepository: CommentaryRepositoryBase,
+  ) {}
 
-
-  async updateCommentary() {
-    return await this.commentaryRepository.updateCommentary();
+  async updateCommentary(body: UpdateCommentaryDataDTO) {
+    return await this.commentaryRepository.updateCommentary(body);
   }
 
-  async deleteCommentary() {
-    return await this.commentaryRepository.deleteCommentary();
+  async deleteCommentary(id: string) {
+    return await this.commentaryRepository.deleteCommentary(id as CommentaryID);
   }
 
-  async addCommentaryReaction() {
-    return await this.commentaryRepository.addCommentaryReaction();
-  }
-
-  async deleteCommentaryReaction() {
-    return await this.commentaryRepository.deleteCommentaryReaction();
+  async reactCommentary(body: ReactCommentaryDataDTO) {
+    const data: IReactCommentaryParams = {
+      date_created: new Date(),
+      reaction: ReactType.LIKE,
+      target_id: body.target_id as CommentaryID,
+      target_type: body.target_type,
+    };
+    return await this.commentaryRepository.reactCommentary(data);
   }
 }
