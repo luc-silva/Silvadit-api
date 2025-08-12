@@ -21,7 +21,7 @@ export class OracleDatabase {
 
   async execute<T>(
     sql: string,
-    bindParams: OracleDB.BindParameters,
+    bindParams: { [key: string]: any },
     options: OracleDB.ExecuteOptions = {},
   ) {
     if (!this.connection) {

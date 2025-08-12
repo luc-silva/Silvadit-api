@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SettingsService } from './settings.service';
 import { SettingsController } from './settings.controller';
 import { AuthMiddleware } from 'src/middlewares/auth';
-import { SettingsRepository } from './settings.repository';
+import { SettingsRepository } from './repository/settings.repository';
 
 @Module({
   imports: [],
