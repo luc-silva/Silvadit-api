@@ -8,8 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostCommentaryDTO } from '../commentary/commentary.dto';
-import { CreatePostDTO, ReactPostDTO, UpdatePostDTO } from './post.dto';
+import { CreatePostCommentaryDTO } from '../commentary/types/commentary.dto';
+import { ReactPostDTO, UpdatePostDTO } from './types/post.dto';
 
 @Controller('post')
 export class PostController {
@@ -23,11 +23,6 @@ export class PostController {
   @Delete(':id')
   async deletePost(@Param('id') post_id: string) {
     return await this.postService.deletePost({ post_id });
-  }
-
-  @Post('create')
-  async createPost(@Body() body: CreatePostDTO) {
-    return await this.postService.createPostCommentary(body);
   }
 
   @Put()
@@ -44,4 +39,7 @@ export class PostController {
   async createCommentary(@Body() body: CreatePostCommentaryDTO) {
     return await this.postService.createPostCommentary(body);
   }
+
+  @Post()
+  async getCommentaries() {}
 }

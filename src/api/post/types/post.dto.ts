@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsBooleanString,
   IsDate,
   IsEnum,
   IsOptional,
@@ -8,21 +9,18 @@ import {
 
 export class CreatePostDTO {
   @IsString()
-  user_id: string;
-
-  @IsString()
-  post_id: string;
-
-  @IsString()
   content: string;
 
   @IsString()
-  @IsOptional()
-  forum_id?: string;
+  title: string;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  is_nsfw: 'S' | 'N';
+  forumId?: string;
+
+  @IsBooleanString()
+  @IsOptional()
+  isNsfw: string;
 }
 
 export class DeletePostDTO {
