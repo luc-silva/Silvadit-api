@@ -1,58 +1,80 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { UserRepository } from '../user/user.repository';
-import {
-  ConcludeUserRegistrationDTO,
-  PregistrerUserDTO,
-  UpdatePreRegistrationUserDTO,
-  UserLoginDTO,
-} from './auth.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { CreateUserDTO, UpdateUserDTO, UserLoginDTO } from './types/auth.dto';
+import { ICreateUserParams, IUpdateUserParams } from '../user/repository/user.interface';
+import { UserRepositoryBase } from '../user/repository/user.repository.base';
+import { AuthValidator } from './utils/Auth.validator';
+import { USER_REPOSITORY_TOKEN } from '../user/repository/user.repository.token';
+import { JWTEncrypter } from '~/utils/Encrypter';
+import { AuthMapper } from './utils/auth.mapper';
 
 @Injectable()
 export class AuthService {
-  constructor(private userRepository: UserRepository) {}
-
-  async login(data: UserLoginDTO) {
-    return await this.userRepository.getUserData();
-  }
-
-  async validateUserEmail(data: PregistrerUserDTO) {
-    const { email } = data;
-    console.log(`a`);
-
-    const isEmailAlreadyRegistered =
-      await this.userRepository.checkIfEmailRegistred({ email });
-
-    if (isEmailAlreadyRegistered) {
-      throw new BadRequestException('Email já cadastrado.');
-    }
-
-    const preRegistrationData =
-      await this.userRepository.getPreRegistrationUser({ email });
-
-    if (preRegistrationData) {
-      return preRegistrationData; 
-    }
-
-    return await this.userRepository.preRegisterUser(data);
-  }
-
-  async updateUser(data: UpdatePreRegistrationUserDTO) {
-    return await this.userRepository.updatePreRegistrationUser(data);
-  }
-
-  async concludeUserRegistration({ email }: ConcludeUserRegistrationDTO) {
-    const initialUserData = await this.userRepository.getPreRegistrationUser({
-      email,
-    });
-
-    if (!initialUserData) {
-      throw new BadRequestException(
-        'Houve um erro ao cadastrar as informações.',
+  constructor(
+    @Inject(USER_REPOSITORY_TOKEN)
+    private readonly userRepository: UserRepositoryBase,
+  ) {}
+  async login(data: UserLoginDTO): Promise<ILoginDetails> {
+    const found = await this.userRepository.getUserByLogin(data.login);
+    
+    if (!found) {
+      throw new Error(
+        'There is no account registered with that email or username',
       );
     }
 
-    await this.userRepository.createUser(initialUserData);
+    if (!found) throw new Error('User not found');
 
-    await this.userRepository.removeUserFromPreRegistration({ email });
+    if (found.password !== data.password) throw new Error('Invalid password');
+
+    const session = AuthMapper.toSession(found);
+    const token = JWTEncrypter.encode<ISession>(session);
+
+    return AuthMapper.toLoginDetails(found, token);
+  }
+
+  async updateUser(data: UpdateUserDTO) {
+    AuthValidator.checkEmail(data.newEmail);
+
+    const alreadyRegistered = await this.userRepository.getUserDataByEmail(
+      data.newEmail,
+    );
+    if (alreadyRegistered) {
+      throw new Error('There is already an account using this email');
+    }
+
+    const binds: IUpdateUserParams = AuthMapper.toUpdate(data)
+
+    return await this.userRepository.updateUser(binds);
+  }
+
+  async createUser(data: CreateUserDTO) {
+    AuthValidator.checkEmail(data.email);
+
+    const foundEmail = await this.userRepository.getUserByLogin(data.email);
+    if (foundEmail) {
+      throw new Error('There is already an account using this email');
+    }
+
+    const foundUsername = await this.userRepository.getUserByLogin(
+      data.username,
+    );
+    if (foundUsername) {
+      throw new Error('There is already an account using this username');
+    }
+
+    AuthValidator.checkPasswords(data);
+
+    //mapear
+    const params: ICreateUserParams = {
+      country: data.country,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      password: data.password, //criptografar
+      state: data.state,
+      username: data.username,
+      email: data.email,
+    };
+
+    await this.userRepository.createUser(params);
   }
 }

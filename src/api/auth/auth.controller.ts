@@ -1,34 +1,26 @@
 import { Body, Controller, Post, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {
-  UserLoginDTO,
-  UpdatePreRegistrationUserDTO,
-  PregistrerUserDTO,
-  ConcludeUserRegistrationDTO,
-} from './auth.dto';
+import { UserLoginDTO, CreateUserDTO, UpdateUserDTO } from './types/auth.dto';
+import { Public } from '~/utils/decorators/protect-routes';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Public()
   async login(@Body() data: UserLoginDTO) {
     return await this.authService.login(data);
   }
 
   @Post('register')
-  async registerEmail(@Body() data: PregistrerUserDTO) {
-    console.log('bateu');
-    return await this.authService.validateUserEmail(data);
+  @Public()
+  async createUser(@Body() data: CreateUserDTO) {
+    return await this.authService.createUser(data);
   }
 
   @Put('update')
-  async updatePreRegistrationData(@Body() data: UpdatePreRegistrationUserDTO) {
+  async updateUser(@Body() data: UpdateUserDTO) {
     return await this.authService.updateUser(data);
-  }
- 
-  @Post('concludeRegistration')
-  async concludeRegistration(@Body() data: ConcludeUserRegistrationDTO) {
-    return await this.authService.concludeUserRegistration(data);
   }
 }
