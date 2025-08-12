@@ -5,7 +5,7 @@ import {
   CreateForumDataDTO,
   FollowForumDataDTO,
   UnfollowForumDataDTO,
-} from './forum.dto';
+} from './types/forum.dto';
 
 @Controller('forum')
 export class ForumController {
@@ -23,12 +23,7 @@ export class ForumController {
 
   @Post('follow')
   async followForum(@Body() body: FollowForumDataDTO) {
-    return await this.forumService.followForum(body);
-  }
-
-  @Post('unfollow')
-  async unfollowForum(@Body() body: UnfollowForumDataDTO) {
-    return await this.forumService.unfollowForum(body);
+    return await this.forumService.subscribeForum();
   }
 
   @Post('ban-user')
