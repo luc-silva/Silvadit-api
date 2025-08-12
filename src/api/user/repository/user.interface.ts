@@ -1,17 +1,18 @@
-interface IPreRegistrationData {
+export interface ICreateUserParams {
   email: string;
   username: string;
   password: string;
   first_name: string;
   last_name: string;
   description?: string;
+  country: string;
+  state: string;
 }
 
-interface ICreateUser {
-  email: string;
-  username: string;
-  password: string;
+export interface IUpdateUserParams {
   first_name: string;
   last_name: string;
-  description?: string;
+  country: string;
+  state: string;
+  description: string;
 }

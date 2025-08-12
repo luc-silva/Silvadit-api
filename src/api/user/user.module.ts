@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { UserRepository } from './user.repository';
-import { PostRepository } from '../post/post.repository';
+import {  UserRepository } from './repository/user.repository';
+import { PostRepository } from '../post/repository/post.repository';
+import { USER_REPOSITORY_TOKEN } from './repository/user.repository.token';
+import { POST_REPOSITORY_TOKEN } from '../post/repository/post.repository.base';
+import { ForumRepository } from '../forum/repository/forum.repository';
+import { FORUM_REPOSITORY_TOKEN } from '../forum/repository/forum.repository.base';
 
 @Module({
-  imports: [],
   controllers: [UserController],
-  providers: [UserService, UserRepository, PostRepository],
-  exports: [UserRepository],
+  providers: [
+    UserService,
+    { provide: USER_REPOSITORY_TOKEN, useClass: UserRepository },
+    { provide: POST_REPOSITORY_TOKEN, useClass: PostRepository },
+    { provide: FORUM_REPOSITORY_TOKEN, useClass: ForumRepository },
+  ],
+  exports: [USER_REPOSITORY_TOKEN],
 })
 export class UserModule {}
