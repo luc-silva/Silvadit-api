@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { ForumRepository } from './forum.repository';
-import {
-  BanUserDTO,
-  CreateForumDataDTO,
-  FollowForumDataDTO,
-  UnfollowForumDataDTO,
-} from './forum.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { BanUserDTO, CreateForumDataDTO } from './types/forum.dto';
+import { FORUM_REPOSITORY_TOKEN, ForumRepositoryBase } from './repository/forum.repository.base';
 
 @Injectable()
 export class ForumService {
-  constructor(private forumRepository: ForumRepository) {}
+  constructor(@Inject(FORUM_REPOSITORY_TOKEN) private forumRepository: ForumRepositoryBase) {}
 
   async createForum(body: CreateForumDataDTO) {
-    return await this.forumRepository.createForum(body);
+    const data: ICreateForumParams = {
+      date_created: body.date_created,
+      description: body.description,
+      forum_id: body.forum_id as ForumID,
+      name: body.forum_id,
+    };
+    return await this.forumRepository.createForum(data);
   }
 
   async getTrendingForums() {
@@ -20,18 +21,22 @@ export class ForumService {
   }
 
   async getForumDetails(id: string) {
-    return await this.forumRepository.getForumDetails(id);
+    return await this.forumRepository.getForumDetails(id as ForumID);
   }
 
-  async followForum(body: FollowForumDataDTO) {
-    return await this.forumRepository.followForum(body);
-  }
-
-  async unfollowForum(body: UnfollowForumDataDTO) {
-    return await this.forumRepository.unfollowForum(body);
+  async subscribeForum() {
+    // check if user already subscribed
+    // if not
+    //return await this.forumRepository.followForum(body);
+    // else
+    //return await this.forumRepository.unfollowForum(body);
   }
 
   async banUserFromForum(body: BanUserDTO) {
-    return await this.forumRepository.banUserFromForum(body);
+    const data: IBanUserParams = {
+      forum_id: body.forum_id as ForumID,
+      user_id: body.user_id as UserID,
+    };
+    return await this.forumRepository.banUserFromForum(data);
   }
 }
