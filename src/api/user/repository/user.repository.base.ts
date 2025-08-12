@@ -11,6 +11,8 @@ export interface UserRepositoryBase {
 
   getUserPosts(id: UserID): Promise<IPost[]>;
 
+  getUserFeed(id: UserID): Promise<IFeedOutput[]>;
+
   createUser(data: ICreateUserParams): Promise<void>;
 
   checkIfEmailRegistered(

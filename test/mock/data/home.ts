@@ -9,3 +9,20 @@ export const createPostDTO = (data?: Partial<CreatePostDTO>): CreatePostDTO => {
     ...data,
   };
 };
+
+export const createFeedItem = (data?: IFeedOutput): IFeedOutput => {
+  return {
+    content: 'Teste',
+    dateCreated: new Date(),
+    dateEdited: null,
+    forum: null,
+    isNsfw: false,
+    owner: {
+      userId: 'ABC',
+      username: 'ABCDEF',
+    },
+    postId: '123ABC',
+    title: 'Lorem Title',
+    ...data
+  };
+};

@@ -127,7 +127,7 @@ export class UserQuery {
     `;
   }
 
-    public static getUserByLoginMethod() {
+  public static getUserByLoginMethod() {
     return `
       SELECT
         UA.FIRST_NAME "firstName",
@@ -142,6 +142,34 @@ export class UserQuery {
         RAWTOHEX(UA.USER_ID) "userId"
       FROM USER_ACCOUNTS UA
       WHERE (UA.EMAIL = :login OR UA.USERNAME = :login)
+    `;
+  }
+
+  public static getUserFeed() {
+    return `
+      WITH USER_FRIENDS AS (
+        SELECT
+          FOLLOWING_USER
+        FROM USER_FOLLOWERS UF
+        WHERE RAWTOHEX(UF.USER_ID) = :id
+      )
+      SELECT
+        DISTINCT RAWTOHEX(P.POST_ID) "postId",
+        RAWTOHEX(P.FORUM_ID) "forumId",
+        P.CONTENT "content",
+        P.TITLE "title",
+        P.IS_NSFW "isNsfw",
+        P.DATE_CREATED "dateCreated",
+        P.DATE_EDITED "lastEdited",
+        RAWTOHEX(UA.USER_ID) "owner_id",
+        UA.USERNAME "owner_username",
+        null "forum.title"
+      FROM POSTS P
+      LEFT JOIN USER_ACCOUNTS UA
+        ON RAWTOHEX(P.USER_ID) = RAWTOHEX(UA.USER_ID)
+      LEFT JOIN USER_FRIENDS UF
+        ON RAWTOHEX(P.USER_ID) = RAWTOHEX(UF.FOLLOWING_USER)
+      AND RAWTOHEX(P.USER_ID) = :id
     `;
   }
 }

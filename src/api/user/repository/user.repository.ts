@@ -138,4 +138,16 @@ export class UserRepository implements UserRepositoryBase {
     );
     return rows && rows.length ? rows[0] : null;
   }
+
+  async getUserFeed(id: UserID): Promise<IFeedOutput[]> {
+    const connection = await getConnection();
+    const query = UserQuery.getUserFeed();
+
+    const { rows } = await connection.execute<IFeedOutput>(
+      query,
+      { id },
+      { outFormat: OUT_FORMAT_OBJECT },
+    );
+    return rows ? rows : [];
+  }
 }

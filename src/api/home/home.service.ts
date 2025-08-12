@@ -20,4 +20,13 @@ export class HomeService {
   async getTrendingPosts() {
     return await this.postRepository.getTrendingPosts();
   }
+
+  async getFeed(session: ISession): Promise<IPostOutput[]> {
+    const user = await this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    return await this.userRepository.getUserFeed(user.userId as UserID);
+  }
 }

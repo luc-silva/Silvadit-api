@@ -23,10 +23,10 @@ interface IPostOutput {
   };
   forum: {
     title: string;
-  };
+  } | null;
   content: string;
   title: string;
   isNsfw: boolean;
   dateCreated: Date;
-  dateEdited: Date;
+  dateEdited: Date | null;
 }

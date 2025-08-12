@@ -11,16 +11,21 @@ export class HomeController {
     private readonly postService: PostService,
   ) {}
 
-  @Get()
+  @Get('side')
   async getSidemenuData() {
     return await this.homeService.getSidemenuData();
   }
 
   @Get()
-  async getFeed() {}
+  async getFeed(@ExtractUser() session: ISession) {
+    return await this.homeService.getFeed(session);
+  }
 
   @Post('post')
-  async createPost(@Body() body: CreatePostDTO, @ExtractUser() session: ISession) {
+  async createPost(
+    @Body() body: CreatePostDTO,
+    @ExtractUser() session: ISession,
+  ) {
     return await this.postService.createPost(body, session);
   }
 }
