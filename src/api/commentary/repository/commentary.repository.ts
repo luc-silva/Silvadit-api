@@ -7,29 +7,20 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CommentaryRepository implements CommentaryRepositoryBase {
-  async getPostCommentaries(post_id: PostID) {
+  async getCommentariesFromPost(post_id: PostID) {
     const connection = await getConnection();
 
-    const query = CommentaryQuery.getPostCommentary();
-    const { rows } = await connection.execute<ICommentary>(query, { post_id });
+    const query = CommentaryQuery.getCommentariesFromPost();
+    const { rows } = await connection.execute<ICommentaryRaw>(query, {
+      post_id,
+    });
     return rows && rows.length ? rows : [];
   }
 
   async createCommentary(body: ICreateCommentaryParams) {
-    const { binds, columns, values } = insertQueryHelper(
-      {
-        user_id: 'USER_ID',
-        post_id: 'POST_ID',
-        content: 'CONTENT',
-        date_created: 'DATE_CREATED',
-        reply_id: 'REPLY_ID',
-      },
-      body,
-    );
-
-    const query = CommentaryQuery.insertComentary(columns, values);
+    const query = CommentaryQuery.insertComentary();
     const connection = await getConnection();
-    await connection.execute(query, binds);
+    await connection.execute(query, body);
   }
 
   async updateCommentary(data: IUpdateCommentaryParams) {

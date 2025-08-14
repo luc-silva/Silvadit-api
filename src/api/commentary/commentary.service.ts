@@ -4,7 +4,6 @@ import {
   UpdateCommentaryDataDTO,
 } from './types/commentary.dto';
 import { COMMENTARY_REPOSITORY_TOKEN, CommentaryRepositoryBase } from './repository/commentary.repository.base';
-import { CommentaryRepository } from './repository/commentary.repository';
 
 @Injectable()
 export class CommentaryService {

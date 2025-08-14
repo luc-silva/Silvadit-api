@@ -3,7 +3,7 @@ import { CommentaryRepositoryBase } from '~/api/commentary/repository/commentary
 export class MockCommentaryRepository
   implements jest.Mocked<CommentaryRepositoryBase>
 {
-  getPostCommentaries = jest.fn<Promise<ICommentary[]>, [PostID]>();
+   getCommentariesFromPost = jest.fn<Promise<ICommentaryRaw[]>, [PostID]>();
 
   createCommentary = jest.fn<Promise<void>, [ICreateCommentaryParams]>();
 

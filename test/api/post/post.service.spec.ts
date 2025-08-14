@@ -9,6 +9,13 @@ import { MockCommentaryRepository } from 'test/mock/repositories/commentary.repo
 import { PostValidator } from '~/api/post/utils/post.validator';
 import { createPostDTO } from 'test/mock/data/home';
 import { CreatePostDTO } from '~/api/post/types/post.dto';
+import {
+  createCommentaryParamsMock,
+  createPostCommentaryDTO,
+} from 'test/mock/data/commentary';
+import { createSessionMock } from 'test/mock/data/auth';
+import { CreatePostCommentaryDTO } from '~/api/commentary/types/commentary.dto';
+import { createCompletedUserData } from 'test/mock/data/user';
 
 describe('postService', () => {
   let postService: PostService;
@@ -78,30 +85,100 @@ describe('postService', () => {
         }).not.toThrow('Invalid data.');
       });
     });
+
+    describe('createPostCommentary', () => {
+      it('Should invalidate data if all field empty', () => {
+        const mock = {
+          content: null,
+          postId: null,
+          replyId: null,
+        } as unknown as CreatePostCommentaryDTO;
+
+        expect(() => PostValidator.createPostCommentary(mock)).toThrow(
+          'Invalid data.',
+        );
+      });
+
+      it('Should invalidate data if content field empty', () => {
+        const mock = {
+          content: null,
+          postId: 'Lorem content',
+          replyId: 'Lorem content',
+        } as unknown as CreatePostCommentaryDTO;
+
+        expect(() => PostValidator.createPostCommentary(mock)).toThrow(
+          'Invalid data.',
+        );
+      });
+
+      it('Should invalidate data if postId field empty', () => {
+        const mock = {
+          content: 'Lorem content',
+          postId: null,
+          replyId: 'Lorem content',
+        } as unknown as CreatePostCommentaryDTO;
+
+        expect(() => PostValidator.createPostCommentary(mock)).toThrow(
+          'Invalid data.',
+        );
+      });
+
+      it('Should not invalidate data if DTO is ok', () => {
+        const mock = {
+          content: 'Lorem content',
+          postId: 'POST123',
+          replyId: 'REPLY321',
+        } as unknown as CreatePostCommentaryDTO;
+
+        expect(() => PostValidator.createPostCommentary(mock)).not.toThrow(
+          'Invalid data.',
+        );
+      });
+    });
   });
 
-  describe.skip('POST', () => {
-    expect(1).toBe(1);
-    // it('createPost - should create exception if user is invalid', async () => {
-    //   const data: CreatePostDTO = {
-    //     content: 'string',
-    //     isNsfw: 'N',
-    //     title: 'Teste',
-    //   };
-    //   await expect(postService.createPost(data)).rejects.toThrow(
-    //     'User not found.',
-    //   );
-    // });
-    // it('createPost - should invalidate invalid data', async () => {
-    //   const data = {
-    //     content: null,
-    //     title: null,
-    //     user_id: 'E8C6B684C8DD4EC582F6AA82CDC76908',
-    //   };
-    //   userRepository.getUserByIdOrUsername.mockResolvedValue(createCompletedUserData())
-    //   await expect(postService.createPost(data as unknown as CreatePostDTO)).rejects.toThrow(
-    //     'Invalid data.',
-    //   );
-    // });
+  describe('POST', () => {
+    describe('createCommentary', () => {
+      it('Should create exception if user has not been found', async () => {
+        const data = createPostCommentaryDTO();
+        const session = createSessionMock();
+        await expect(
+          postService.createPostCommentary(data, session),
+        ).rejects.toThrow('User not found.');
+      });
+
+      it('Should create exception if DTO is invalid', async () => {
+        const data = {
+          ...createPostCommentaryDTO(),
+          content: null,
+        } as unknown as CreatePostCommentaryDTO;
+        const session = createSessionMock();
+
+        userRepository.getUserByIdOrUsername.mockResolvedValue(
+          createCompletedUserData(),
+        );
+
+        await expect(
+          postService.createPostCommentary(data, session),
+        ).rejects.toThrow('Invalid data.');
+      });
+
+      it('Should call repository correctly', async () => {
+        const userId = '123';
+        const session = createSessionMock();
+        const mockedDto = createPostCommentaryDTO();
+        const expectCalledWith = createCommentaryParamsMock({ userId });
+
+        userRepository.getUserByIdOrUsername.mockResolvedValue(
+          createCompletedUserData({ userId }),
+        );
+
+        await expect(postService.createPostCommentary(mockedDto, session))
+          .resolves;
+        await expect(
+          commentaryRepository.createCommentary,
+        ).toHaveBeenCalledWith(expectCalledWith);
+      });
+    });
   });
 });

@@ -10,13 +10,14 @@ import {
 import { PostService } from './post.service';
 import { CreatePostCommentaryDTO } from '../commentary/types/commentary.dto';
 import { ReactPostDTO, UpdatePostDTO } from './types/post.dto';
+import { ExtractUser } from '~/utils/decorators/extract-user';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get(':id')
-  async getPosts(@Param('id') id: string) {
+  async getPostDetails(@Param('id') id: string) {
     return await this.postService.getPostDetails(id);
   }
 
@@ -35,11 +36,16 @@ export class PostController {
     return await this.postService.reactPost(body);
   }
 
-  @Post()
-  async createCommentary(@Body() body: CreatePostCommentaryDTO) {
-    return await this.postService.createPostCommentary(body);
+  @Post("commentary")
+  async createCommentary(
+    @Body() body: CreatePostCommentaryDTO,
+    @ExtractUser() session: ISession,
+  ) {
+    return await this.postService.createPostCommentary(body, session);
   }
 
-  @Post()
-  async getCommentaries() {}
+  @Post(':id/commentaries')
+  async getCommentaries(@Param('id') post_id: string) {
+    await this.postService.getPostComentaries(post_id);
+  }
 }

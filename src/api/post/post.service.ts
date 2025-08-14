@@ -18,6 +18,7 @@ import { USER_REPOSITORY_TOKEN } from '../user/repository/user.repository.token'
 import { UserRepositoryBase } from '../user/repository/user.repository.base';
 import { PostValidator } from './utils/post.validator';
 import { HomepageMapper } from '../home/utils/home.mapper';
+import { CommentaryMapper } from '../commentary/utils/commentary.mapper';
 
 @Injectable()
 export class PostService {
@@ -37,7 +38,6 @@ export class PostService {
     PostValidator.createPost(body);
 
     const parsedData: ICreatePostParams = HomepageMapper.createPost(body, user);
-
     return await this.postRepository.createPost(parsedData);
   }
 
@@ -64,13 +64,24 @@ export class PostService {
   }
 
   async getPostComentaries(post_id: string) {
-    return await this.commentaryRepository.getPostCommentaries(
-      post_id as PostID,
-    );
+    const rawCommentaries =
+      await this.commentaryRepository.getCommentariesFromPost(
+        post_id as PostID,
+      );
+
+    return CommentaryMapper.fromRaw(rawCommentaries);
   }
 
-  async createPostCommentary(body: CreatePostCommentaryDTO) {
-    return await this.commentaryRepository.createCommentary(body);
+  async createPostCommentary(body: CreatePostCommentaryDTO, session: ISession) {
+    const user = await this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    PostValidator.createPostCommentary(body);
+
+    const parsed = CommentaryMapper.createCommentary(body, user);
+    return await this.commentaryRepository.createCommentary(parsed);
   }
 
   async getPostDetails(id: string) {

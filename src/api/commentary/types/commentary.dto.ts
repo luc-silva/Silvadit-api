@@ -9,12 +9,6 @@ export class CreatePostCommentaryDTO {
   replyId?: string;
 
   @IsString()
-  userId: string;
-
-  @IsString()
-  title: string;
-
-  @IsString()
   postId: string;
 
 }

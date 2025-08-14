@@ -2,7 +2,7 @@ interface ICreateCommentaryParams {
   userId: string;
   postId: string;
   content: string;
-  replyId?: string;
+  replyId: string | null;
 }
 
 interface IUpdateCommentaryParams {

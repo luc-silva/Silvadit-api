@@ -1,7 +1,7 @@
 export const COMMENTARY_REPOSITORY_TOKEN = 'COMMENTARY_REPOSITORY_TOKEN';
 
 export interface CommentaryRepositoryBase {
-  getPostCommentaries(post_id: PostID): Promise<ICommentary[]>;
+  getCommentariesFromPost(post_id: PostID): Promise<ICommentaryRaw[]>;
 
   createCommentary(body: ICreateCommentaryParams): Promise<void>;
 

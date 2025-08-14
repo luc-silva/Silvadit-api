@@ -1,22 +1,42 @@
 export class CommentaryQuery {
-  public static getPostCommentary() {
+  public static getCommentariesFromPost() {
     return `
-      SELECT *
-        FROM COMMENTARY C
-        WHERE C.POST_ID = :post_id
+      SELECT
+        C.COMMENT_ID "id",
+        C.POST_ID "postId",
+        C.USER_ID "user_id",
+        UA.USERNAME "username",
+        C.CONTENT "content",
+        C.REPLY_ID "replyId",
+        C.DATE_CREATED "dateCreated",
+        C.DATE_EDITED "dateEdited"
+      FROM COMMENTARIES C, USER_ACCOUNTS UA, POSTS P
+      WHERE RAWTOHEX(C.USER_ID) = RAWTOHEX(UA.USER_ID)
+        AND RAWTOHEX(C.POST_ID) = RAWTOHEX(P.POST_ID)
+        AND C.POST_ID = :post_id
     `;
   }
 
-  public static insertComentary(columns: string[], values: string[]) {
+  public static insertComentary() {
     return `
-      INSERT INTO COMMENTARY (${columns})
-      VALUES (${values})
+      INSERT INTO COMMENTARIES (
+        POST_ID,
+        CONTENT,
+        REPLY_ID,
+        USER_ID
+      )
+      VALUES (
+        :postId,
+        :content,
+        :replyId,
+        :userId
+      )
     `;
   }
 
   public static updateCommentary(queries: string[]) {
     return `
-      UPDATE COMMENTARY (
+      UPDATE COMMENTARIES (
         CONTENT
       )
       SET ${queries}
@@ -39,7 +59,7 @@ export class CommentaryQuery {
 
   public static removeCommentaryReaction() {
     return `
-      DELETE FROM COMMENTARY
+      DELETE FROM COMMENTARIES
       WHERE COMMENTARY_ID = :commentary_id
     `;
   }
