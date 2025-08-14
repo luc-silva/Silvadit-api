@@ -139,11 +139,11 @@ export class UserRepository implements UserRepositoryBase {
     return rows && rows.length ? rows[0] : null;
   }
 
-  async getUserFeed(id: UserID): Promise<IFeedOutput[]> {
+  async getUserFeed(id: UserID): Promise<IRawFeed[]> {
     const connection = await getConnection();
     const query = UserQuery.getUserFeed();
 
-    const { rows } = await connection.execute<IFeedOutput>(
+    const { rows } = await connection.execute<IRawFeed>(
       query,
       { id },
       { outFormat: OUT_FORMAT_OBJECT },

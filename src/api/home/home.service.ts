@@ -5,6 +5,7 @@ import {
 } from '../post/repository/post.repository.base';
 import { USER_REPOSITORY_TOKEN } from '../user/repository/user.repository.token';
 import { UserRepositoryBase } from '../user/repository/user.repository.base';
+import { HomepageMapper } from './utils/home.mapper';
 
 @Injectable()
 export class HomeService {
@@ -27,6 +28,8 @@ export class HomeService {
       throw new Error('User not found.');
     }
 
-    return await this.userRepository.getUserFeed(user.userId as UserID);
+    const data = await this.userRepository.getUserFeed(user.userId as UserID)
+
+    return HomepageMapper.mapRawFeed(data);
   }
 }

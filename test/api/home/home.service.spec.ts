@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createFeedItem } from 'test/mock/data/home';
+import { createFeedItem, createRawFeedItem } from 'test/mock/data/home';
 import { createCompletedUserData } from 'test/mock/data/user';
 import { MockPostRepository } from 'test/mock/repositories/post.repository';
 import { MockUserRepository } from 'test/mock/repositories/user.repository';
@@ -38,27 +38,40 @@ describe('HomeService', () => {
   });
 
   describe('Mapper', () => {
-    it('Should map post creation params correctly', () => {
-      const expected: ICreatePostParams = {
-        content: 'Lorem',
-        title: 'Lorem Title',
-        forum_id: null,
-        is_nsfw: 'N',
-        user_id: 'ABC',
-      };
-      const data: CreatePostDTO = {
-        content: 'Lorem',
-        title: 'Lorem Title',
-        isNsfw: 'false',
-        forumId: '',
-      };
+    describe('createPost', () => {
+      it('Should map post creation params correctly', () => {
+        const expected: ICreatePostParams = {
+          content: 'Lorem',
+          title: 'Lorem Title',
+          forum_id: null,
+          is_nsfw: 'N',
+          user_id: 'ABC',
+        };
+        const data: CreatePostDTO = {
+          content: 'Lorem',
+          title: 'Lorem Title',
+          isNsfw: 'false',
+          forumId: '',
+        };
 
-      const result = HomepageMapper.createPost(
-        data,
-        createCompletedUserData({ userId: 'ABC' }),
-      );
+        const result = HomepageMapper.createPost(
+          data,
+          createCompletedUserData({ userId: 'ABC' }),
+        );
 
-      expect(result).toEqual(expected);
+        expect(result).toEqual(expected);
+      });
+    });
+
+    describe('createPost', () => {
+      it('Should map feed correctly', () => {
+        const expected: IFeedOutput[] = [createFeedItem()];
+        const data: IRawFeed[] = [createRawFeedItem()];
+
+        const result = HomepageMapper.mapRawFeed(data);
+
+        expect(result).toEqual(expected);
+      });
     });
   });
 
@@ -77,17 +90,17 @@ describe('HomeService', () => {
 
       it('Should return a array of feed items', async () => {
         const sessionMock = { id: 'asd' } as ISession;
-        const userMock = createCompletedUserData({userId: "asd"})
+        const userMock = createCompletedUserData({ userId: 'asd' });
 
-        const expected: IFeedOutput[] = [createFeedItem()]
+        const expected: IFeedOutput[] = [createFeedItem()];
 
         userRepository.getUserByIdOrUsername.mockResolvedValue(userMock);
-        userRepository.getUserFeed.mockResolvedValue([createFeedItem()]);
+        userRepository.getUserFeed.mockResolvedValue([createRawFeedItem()]);
 
-        const result = await homeService.getFeed(sessionMock)
+        const result = await homeService.getFeed(sessionMock);
 
-        expect(result).toBeInstanceOf(Array)
-        expect(result).toEqual(expected)
+        expect(result).toBeInstanceOf(Array);
+        expect(result).toEqual(expected);
       });
     });
   });

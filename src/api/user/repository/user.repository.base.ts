@@ -11,7 +11,7 @@ export interface UserRepositoryBase {
 
   getUserPosts(id: UserID): Promise<IPost[]>;
 
-  getUserFeed(id: UserID): Promise<IFeedOutput[]>;
+  getUserFeed(id: UserID): Promise<IRawFeed[]>;
 
   createUser(data: ICreateUserParams): Promise<void>;
 

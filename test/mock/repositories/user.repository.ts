@@ -30,5 +30,5 @@ export class MockUserRepository implements jest.Mocked<UserRepositoryBase> {
 
   getUserByIdOrUsername = jest.fn<Promise<ICompleteUser | null>, [string]>();
 
-  getUserFeed = jest.fn<Promise<IFeedOutput[]>, [UserID]>();
+  getUserFeed = jest.fn<Promise<IRawFeed[]>, [UserID]>();
 }

@@ -163,7 +163,7 @@ export class UserQuery {
         P.DATE_EDITED "lastEdited",
         RAWTOHEX(UA.USER_ID) "owner_id",
         UA.USERNAME "owner_username",
-        null "forum.title"
+        null "forum_title"
       FROM POSTS P
       LEFT JOIN USER_ACCOUNTS UA
         ON RAWTOHEX(P.USER_ID) = RAWTOHEX(UA.USER_ID)
