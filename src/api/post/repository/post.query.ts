@@ -8,7 +8,7 @@ export class PostQuery {
         IS_NSFW,
         TITLE
       )
-      VALUES (:forum_id, :user_id, :content, :title, :is_nsfw)
+      VALUES (:forum_id, :user_id, :content, :is_nsfw, :title)
     `;
   }
 
