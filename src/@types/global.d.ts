@@ -4,3 +4,5 @@ type Brand<B> = { [__brand]: B }
 type Branded<T, B> = T & Brand<B>
 
 type DatabaseValidated = Branded<string, "validated">;
+
+type IYesNo = 'S' | 'N';
