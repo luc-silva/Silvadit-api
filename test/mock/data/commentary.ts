@@ -59,3 +59,14 @@ export const createPostCommentaryDTO = (
     ...data,
   };
 };
+
+export const createUpdateCommentaryData = (
+  data?: CreatePostCommentaryDTO,
+): CreatePostCommentaryDTO => {
+  return {
+    content: 'Teste',
+    postId: '123',
+    replyId: undefined,
+    ...data,
+  };
+};

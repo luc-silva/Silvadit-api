@@ -13,24 +13,30 @@ import {
   UpdateCommentaryDataDTO,
 } from './types/commentary.dto';
 import { Public } from '~/utils/decorators/protect-routes';
+import { ExtractUser } from '~/utils/decorators/extract-user';
 
 @Controller('commentary')
 export class CommentaryController {
   constructor(private readonly commentaryService: CommentaryService) {}
 
   @Put()
-  async updateCommentary(@Body() body: UpdateCommentaryDataDTO) {
-    return await this.commentaryService.updateCommentary(body);
+  async updateCommentary(
+    @Body() body: UpdateCommentaryDataDTO,
+    @ExtractUser() session: ISession,
+  ) {
+    return await this.commentaryService.updateCommentary(body, session);
   }
 
   @Delete()
-  async deleteCommentary(@Param('id') id: string) {
-    return await this.commentaryService.deleteCommentary(id);
+  async deleteCommentary(
+    @Param('id') id: string,
+    @ExtractUser() session: ISession,
+  ) {
+    return await this.commentaryService.deleteCommentary(id, session);
   }
 
   //escopo proprio
   @Post('react')
-
   async reactCommentary(@Body() body: ReactCommentaryDataDTO) {
     return await this.commentaryService.reactCommentary(body);
   }

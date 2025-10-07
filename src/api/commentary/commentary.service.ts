@@ -8,19 +8,33 @@ import {
   CommentaryRepositoryBase,
 } from './repository/commentary.repository.base';
 import { CommentaryMapper } from './utils/commentary.mapper';
+import { USER_REPOSITORY_TOKEN } from '../user/repository/user.repository.token';
+import { UserRepositoryBase } from '../user/repository/user.repository.base';
 
 @Injectable()
 export class CommentaryService {
   constructor(
     @Inject(COMMENTARY_REPOSITORY_TOKEN)
     private readonly commentaryRepository: CommentaryRepositoryBase,
+    @Inject(USER_REPOSITORY_TOKEN)
+    private readonly userRepository: UserRepositoryBase,
   ) {}
 
-  async updateCommentary(body: UpdateCommentaryDataDTO) {
+  async updateCommentary(body: UpdateCommentaryDataDTO, session: ISession) {
+    const user = await this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
     return await this.commentaryRepository.updateCommentary(body);
   }
 
-  async deleteCommentary(id: string) {
+  async deleteCommentary(id: string, session: ISession) {
+    const user = await this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) {
+      throw new Error('User not found.');
+    }
+    
     return await this.commentaryRepository.deleteCommentary(id as CommentaryID);
   }
 
