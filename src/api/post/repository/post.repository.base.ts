@@ -5,10 +5,10 @@ export interface PostRepositoryBase {
   deletePost(postId: PostID): Promise<void>;
   updatePost(data: IUpdatePostParams): Promise<void>;
   reactPost(data: IReactPostParams): Promise<void>;
-  getTrendingPosts(): Promise<IPost[]>;
-  getPosts(userId: UserID): Promise<IPost[]>;
-  getPostsFromSuggested(): Promise<IPost[]>;
-  getPostDetails(postId: PostID): Promise<IPost| null>;
+  getTrendingPosts(): Promise<IPostRaw[]>;
+  getPosts(userId: UserID): Promise<IPostRaw[]>;
+  getPostsFromSuggested(): Promise<IPostRaw[]>;
+  getPostDetails(postId: PostID): Promise<IPostRaw| null>;
   bookmarkPost(data: IBookmarkPostParams): Promise<void>;
   unbookmarkPost(binds: IUnbookmarkPostParams): Promise<void>;
 }

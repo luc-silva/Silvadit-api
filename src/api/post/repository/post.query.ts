@@ -58,9 +58,34 @@ export class PostQuery {
 
   public static getPostDetails() {
     return `
-      SELECT POST_ID
-      FROM POST
-      WHERE POST_ID = :post_id
+      SELECT 
+        RAWTOHEX(P.POST_ID) "post_id",
+        P.CONTENT "post_content",
+        P.TITLE "post_title",
+        P.IS_NSFW "post_is_nsfw",
+        P.DATE_CREATED "post_date_created",
+        P.DATE_EDITED "post_date_edited",
+        RAWTOHEX(UA.USER_ID) "owner_id",
+        UA.USERNAME "owner_username",
+        (
+          SELECT COUNT(*)
+          FROM USER_FOLLOWERS UF
+          WHERE RAWTOHEX(UF.FOLLOWING_USER) = RAWTOHEX(UA.USER_ID)
+        ) "owner_followers",
+        RAWTOHEX(F.FORUM_ID) "forum_id",
+        F.NAME "forum_name",
+        F.DESCRIPTION "forum_description",
+        (
+          SELECT COUNT(*)
+          FROM FORUM_MEMBERS FM
+          WHERE RAWTOHEX(FM.FORUM_ID) = RAWTOHEX(F.FORUM_ID)
+        ) "forum_followers"
+      FROM POSTS P
+      LEFT JOIN USER_ACCOUNTS UA
+        ON P.USER_ID = UA.USER_ID
+      LEFT JOIN FORUMS F
+        ON P.FORUM_ID = F.FORUM_ID
+      WHERE RAWTOHEX(P.POST_ID) = :postId
     `;
   }
 
@@ -79,13 +104,15 @@ export class PostQuery {
     `;
   }
 
-  public static updatePosts(queries: string[], postId: PostID) {
+  public static updatePosts() {
     return `
-      UPDATE POST (
-        CONTENT
-      )
-      SET ${queries}
-      WHERE  POST_ID = ${postId}
+      UPDATE POSTS
+      SET 
+        CONTENT = :content,
+        TITLE = :title,
+        IS_NSFW =:is_nsfw
+
+      WHERE  POST_ID = :post_id
     `;
   }
 }

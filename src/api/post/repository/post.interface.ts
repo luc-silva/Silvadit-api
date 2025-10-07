@@ -17,6 +17,7 @@ interface IUpdatePostParams {
   content: string;
   is_nsfw: 'S' | 'N';
   post_id: string;
+  title: string;
 }
 
 interface IDeletePostParams {

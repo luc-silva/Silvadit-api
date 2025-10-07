@@ -19,6 +19,8 @@ import { UserRepositoryBase } from '../user/repository/user.repository.base';
 import { PostValidator } from './utils/post.validator';
 import { HomepageMapper } from '../home/utils/home.mapper';
 import { CommentaryMapper } from '../commentary/utils/commentary.mapper';
+import { PostMapper } from './utils/post.mapper';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class PostService {
@@ -41,11 +43,20 @@ export class PostService {
     return await this.postRepository.createPost(parsedData);
   }
 
-  async updatePost(body: UpdatePostDTO) {
-    const parsedData: IUpdatePostParams = {
-      ...body,
-      is_nsfw: body.is_nsfw ? 'S' : 'N',
-    };
+  async updatePost(body: UpdatePostDTO, session: ISession) {
+    const found = await this.postRepository.getPostDetails(
+      body.postId as PostID,
+    );
+    if (!found) throw new Error('Post not found.');
+
+    const user = await this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) throw new Error('User not found.');
+
+    if (user.userId !== found.owner_id)
+      throw new Error('User is not owner of the post.');
+
+    const parsedData = PostMapper.updatePost(body);
+
     return await this.postRepository.updatePost(parsedData);
   }
 
@@ -85,6 +96,9 @@ export class PostService {
   }
 
   async getPostDetails(id: string) {
-    return await this.postRepository.getPostDetails(id as PostID);
+    const found = await this.postRepository.getPostDetails(id as PostID);
+    if (!found) throw new Error('Post not found.');
+
+    return PostMapper.mapPostDetails(found);
   }
 }

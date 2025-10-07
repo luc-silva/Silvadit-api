@@ -44,10 +44,13 @@ export class UpdatePostDTO {
   content: string;
 
   @IsBoolean()
-  is_nsfw: boolean;
+  isNsfw: boolean;
 
   @IsString()
-  post_id: string;
+  postId: string;
+
+  @IsString()
+  title: string;
 }
 
 export class GetPostsDTO {

@@ -11,12 +11,14 @@ import { PostService } from './post.service';
 import { CreatePostCommentaryDTO } from '../commentary/types/commentary.dto';
 import { ReactPostDTO, UpdatePostDTO } from './types/post.dto';
 import { ExtractUser } from '~/utils/decorators/extract-user';
+import { Public } from '~/utils/decorators/protect-routes';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get(':id')
+  @Public()
   async getPostDetails(@Param('id') id: string) {
     return await this.postService.getPostDetails(id);
   }
@@ -27,8 +29,11 @@ export class PostController {
   }
 
   @Put()
-  async updatePost(@Body() body: UpdatePostDTO) {
-    return await this.postService.updatePost(body);
+  async updatePost(
+    @Body() body: UpdatePostDTO,
+    @ExtractUser() session: ISession,
+  ) {
+    return await this.postService.updatePost(body, session);
   }
 
   @Post('react')
@@ -36,7 +41,7 @@ export class PostController {
     return await this.postService.reactPost(body);
   }
 
-  @Post("commentary")
+  @Post('commentary')
   async createCommentary(
     @Body() body: CreatePostCommentaryDTO,
     @ExtractUser() session: ISession,
@@ -44,8 +49,9 @@ export class PostController {
     return await this.postService.createPostCommentary(body, session);
   }
 
-  @Post(':id/commentaries')
+  @Get(':id/commentaries')
+  @Public()
   async getCommentaries(@Param('id') post_id: string) {
-    await this.postService.getPostComentaries(post_id);
+    return await this.postService.getPostComentaries(post_id);
   }
 }

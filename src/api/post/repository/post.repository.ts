@@ -3,6 +3,7 @@ import { insertQueryHelper } from 'src/utils/insertQueryHelper';
 import { PostQuery } from './post.query';
 import { updateQueryHelper } from 'src/utils/updateQueryHelper';
 import { PostRepositoryBase } from './post.repository.base';
+import { OUT_FORMAT_OBJECT } from 'oracledb';
 
 export class PostRepository implements PostRepositoryBase {
   async bookmarkPost(data: IBookmarkPostParams): Promise<void> {
@@ -42,39 +43,38 @@ export class PostRepository implements PostRepositoryBase {
     const connection = await getConnection();
 
     const query = PostQuery.getPostDetails();
-
-    const { rows } = await connection.execute<IPost>(query, {
-      post_id: postId,
+    const { rows } = await connection.execute<IPostRaw>(query, {
+      postId,
     });
     return rows && rows.length ? rows[0] : null;
   }
 
-  async getPosts(userId: UserID): Promise<IPost[]> {
+  async getPosts(userId: UserID): Promise<IPostRaw[]> {
     const connection = await getConnection();
 
     const query = PostQuery.getPosts();
 
-    const { rows } = await connection.execute<IPost>(query, {
+    const { rows } = await connection.execute<IPostRaw>(query, {
       user_id: userId,
     });
     return rows && rows.length ? rows : [];
   }
 
-  async getPostsFromSuggested(): Promise<IPost[]> {
+  async getPostsFromSuggested(): Promise<IPostRaw[]> {
     const connection = await getConnection();
 
     const query = PostQuery.getPostFromSugested();
 
-    const { rows } = await connection.execute<IPost>(query, {});
+    const { rows } = await connection.execute<IPostRaw>(query, {});
     return rows && rows.length ? rows : [];
   }
 
-  async getTrendingPosts(): Promise<IPost[]> {
+  async getTrendingPosts(): Promise<IPostRaw[]> {
     const connection = await getConnection();
 
     const query = PostQuery.getTrendingPosts();
 
-    const { rows } = await connection.execute<IPost>(query, {});
+    const { rows } = await connection.execute<IPostRaw>(query, {});
     return rows && rows.length ? rows : [];
   }
 
@@ -106,16 +106,9 @@ export class PostRepository implements PostRepositoryBase {
   }
 
   async updatePost(data: IUpdatePostParams): Promise<void> {
-    const binds = { content: data.content, is_nsfw: data.is_nsfw };
-
-    const { queries } = updateQueryHelper(
-      { content: 'CONTENT', is_nsfw: 'IS_NSFW' },
-      binds,
-    );
-
     const connection = await getConnection();
 
-    const query = PostQuery.updatePosts(queries, data.post_id as PostID);
-    await connection.execute(query, binds);
+    const query = PostQuery.updatePosts();
+    await connection.execute(query, data);
   }
 }

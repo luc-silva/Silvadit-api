@@ -9,13 +9,13 @@ export class MockPostRepository implements jest.Mocked<PostRepositoryBase> {
 
   reactPost = jest.fn<Promise<void>, [IReactPostParams]>();
 
-  getTrendingPosts = jest.fn<Promise<IPost[]>, []>();
+  getTrendingPosts = jest.fn<Promise<IPostRaw[]>, []>();
 
-  getPosts = jest.fn<Promise<IPost[]>, [UserID]>();
+  getPosts = jest.fn<Promise<IPostRaw[]>, [UserID]>();
 
-  getPostsFromSuggested = jest.fn<Promise<IPost[]>, []>();
+  getPostsFromSuggested = jest.fn<Promise<IPostRaw[]>, []>();
 
-  getPostDetails = jest.fn<Promise<IPost | null>, [PostID]>();
+  getPostDetails = jest.fn<Promise<IPostRaw | null>, [PostID]>();
 
   bookmarkPost = jest.fn<Promise<void>, [IBookmarkPostParams]>();
   
