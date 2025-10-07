@@ -1,4 +1,4 @@
-import OracleDB from 'oracledb';
+import OracleDB, { OUT_FORMAT_OBJECT } from 'oracledb';
 const oracledb = require('oracledb');
 
 export class OracleDatabase {
@@ -29,7 +29,10 @@ export class OracleDatabase {
     }
 
     try {
-      const data = await this.connection.execute<T>(sql, bindParams, options);
+      const data = await this.connection.execute<T>(sql, bindParams, {
+        outFormat: OUT_FORMAT_OBJECT,
+        ...options,
+      });
       await this.connection.commit();
       return data;
     } catch (e) {
