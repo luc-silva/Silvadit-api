@@ -19,10 +19,10 @@ export class HomepageMapper {
       content: data.content,
       dateCreated: data.dateCreated,
       dateEdited: data.lastEdited,
-      forum: data.forumId ? { title: data.forum_title } : null,
+      forum: data.forumId ? { name: data.forum_title, id: data.forumId, description: data } : null,
       isNsfw: data.isNsfw === 'S' ? true : false,
       owner: {
-        userId: data.owner_id,
+        id: data.owner_id,
         username: data.owner_username,
       },
       postId: data.postId,
