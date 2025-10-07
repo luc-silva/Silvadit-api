@@ -11,6 +11,7 @@ import {
   FORUM_REPOSITORY_TOKEN,
   ForumRepositoryBase,
 } from '../forum/repository/forum.repository.base';
+import { PostMapper } from '../post/utils/post.mapper';
 
 @Injectable()
 export class UserService {
@@ -65,21 +66,7 @@ export class UserService {
 
     const posts = await this.postRepository.getPosts(user.userId as UserID);
 
-    return posts.map<IPostOutput>((data) => ({
-      postId: data.postId,
-      owner: {
-        userId: 'Teste',
-        username: 'Teste',
-      },
-      forum: {
-        title: 'Teste',
-      },
-      content: data.content,
-      title: data.title,
-      isNsfw: data.isNsfw,
-      dateCreated: data.dateCreated,
-      dateEdited: data.dateEdited,
-    }));
+    return posts.map<IPostOutput>(PostMapper.mapPostDetails);
   }
 
   async getUserLoginData() {}
@@ -101,6 +88,8 @@ export class UserService {
       dateSubscribed: forum.dateSubscribed,
       isAdmin: forum.isAdmin,
       isFounder: forum.isFounder,
+      followersTotal: forum.followersTotal,
+      postsTotal: forum.postsTotal,
     }));
   }
 

@@ -6,7 +6,7 @@ export class MockUserRepository implements jest.Mocked<UserRepositoryBase> {
 
   getUserFollowingAccounts = jest.fn<Promise<ISubscribedUser[]>, [UserID]>();
 
-  getUserFollowingForums = jest.fn<Promise<IForumOutput[]>, [UserID]>();
+  getUserFollowingForums = jest.fn<Promise<IForumRaw[]>, [UserID]>();
 
   getUserDetails = jest.fn<Promise<IUserOutput | null>, [string]>();
 
@@ -15,7 +15,7 @@ export class MockUserRepository implements jest.Mocked<UserRepositoryBase> {
     [ValidatedUserEmail]
   >();
 
-  getUserPosts = jest.fn<Promise<IPost[]>, [UserID]>();
+  getUserPosts = jest.fn<Promise<IPostRaw[]>, [UserID]>();
 
   createUser = jest.fn<Promise<void>, [ICreateUserParams]>();
 

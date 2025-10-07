@@ -35,7 +35,7 @@ export class UserRepository implements UserRepositoryBase {
     const connection = await getConnection();
     const query = UserQuery.getUserFollowedAccounts();
 
-    const { rows } = await connection.execute<IForumOutput>(
+    const { rows } = await connection.execute<IForumRaw>(
       query,
       { id },
       { outFormat: OUT_FORMAT_OBJECT },
@@ -103,11 +103,11 @@ export class UserRepository implements UserRepositoryBase {
 
   async updateUser(data: IUpdateUserParams) {}
 
-  async getUserPosts(id: UserID): Promise<IPost[]> {
+  async getUserPosts(id: UserID): Promise<IPostRaw[]> {
     const connection = await getConnection();
     const query = UserQuery.getUserPosts();
 
-    const { rows } = await connection.execute<IPost>(
+    const { rows } = await connection.execute<IPostRaw>(
       query,
       { id },
       { outFormat: OUT_FORMAT_OBJECT },
