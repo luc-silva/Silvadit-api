@@ -16,6 +16,9 @@ export class CommentaryMapper {
         id: commentary.user_id,
         username: commentary.user_username,
       },
+      likes: commentary.likes,
+      replies: [],
+      repliesTotal: commentary.replies_total
     }));
   }
 

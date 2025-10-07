@@ -10,4 +10,8 @@ export interface CommentaryRepositoryBase {
   deleteCommentary(id: CommentaryID): Promise<void>;
 
   reactCommentary(commentary_id: IReactCommentaryParams): Promise<void>;
+
+  getReplies(commentary_id: CommentaryID): Promise<ICommentaryRaw[]>;
+
+  getCommentary(commentary_id: CommentaryID): Promise<ICommentaryRaw | null>;
 }

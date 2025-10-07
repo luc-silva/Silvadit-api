@@ -12,6 +12,7 @@ import {
   ReactCommentaryDataDTO,
   UpdateCommentaryDataDTO,
 } from './types/commentary.dto';
+import { Public } from '~/utils/decorators/protect-routes';
 
 @Controller('commentary')
 export class CommentaryController {
@@ -29,7 +30,14 @@ export class CommentaryController {
 
   //escopo proprio
   @Post('react')
+
   async reactCommentary(@Body() body: ReactCommentaryDataDTO) {
     return await this.commentaryService.reactCommentary(body);
+  }
+
+  @Get(':id/replies')
+  @Public()
+  async getReplies(@Param('id') commentaryId: string) {
+    return await this.commentaryService.getReplies(commentaryId);
   }
 }

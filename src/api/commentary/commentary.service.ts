@@ -3,7 +3,11 @@ import {
   ReactCommentaryDataDTO,
   UpdateCommentaryDataDTO,
 } from './types/commentary.dto';
-import { COMMENTARY_REPOSITORY_TOKEN, CommentaryRepositoryBase } from './repository/commentary.repository.base';
+import {
+  COMMENTARY_REPOSITORY_TOKEN,
+  CommentaryRepositoryBase,
+} from './repository/commentary.repository.base';
+import { CommentaryMapper } from './utils/commentary.mapper';
 
 @Injectable()
 export class CommentaryService {
@@ -28,5 +32,20 @@ export class CommentaryService {
       target_type: body.target_type,
     };
     return await this.commentaryRepository.reactCommentary(data);
+  }
+
+  async getReplies(commentaryId: string): Promise<ICommentaryOutput[]> {
+    const commentary = await this.commentaryRepository.getCommentary(
+      commentaryId as CommentaryID,
+    );
+    if (!commentary) {
+      throw new Error('Commentary not found.');
+    }
+
+    const commentariesRaw = await this.commentaryRepository.getReplies(
+      commentaryId as CommentaryID,
+    );
+
+    return CommentaryMapper.fromRaw(commentariesRaw);
   }
 }

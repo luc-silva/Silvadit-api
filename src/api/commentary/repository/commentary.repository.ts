@@ -4,6 +4,7 @@ import { CommentaryRepositoryBase } from './commentary.repository.base';
 import { insertQueryHelper } from 'src/utils/insertQueryHelper';
 import { updateQueryHelper } from 'src/utils/updateQueryHelper';
 import { Injectable } from '@nestjs/common';
+import { OUT_FORMAT_OBJECT } from 'oracledb';
 
 @Injectable()
 export class CommentaryRepository implements CommentaryRepositoryBase {
@@ -11,10 +12,42 @@ export class CommentaryRepository implements CommentaryRepositoryBase {
     const connection = await getConnection();
 
     const query = CommentaryQuery.getCommentariesFromPost();
-    const { rows } = await connection.execute<ICommentaryRaw>(query, {
-      post_id,
-    });
+    const { rows } = await connection.execute<ICommentaryRaw>(
+      query,
+      {
+        post_id,
+      },
+      { outFormat: OUT_FORMAT_OBJECT },
+    );
     return rows && rows.length ? rows : [];
+  }
+
+  async getReplies(commentary_id: CommentaryID) {
+    const connection = await getConnection();
+
+    const query = CommentaryQuery.getReplies();
+    const { rows } = await connection.execute<ICommentaryRaw>(
+      query,
+      {
+        id: commentary_id,
+      },
+      { outFormat: OUT_FORMAT_OBJECT },
+    );
+    return rows && rows.length ? rows : [];
+  }
+
+  async getCommentary(commentary_id: CommentaryID) {
+    const connection = await getConnection();
+
+    const query = CommentaryQuery.getCommentary();
+    const { rows } = await connection.execute<ICommentaryRaw>(
+      query,
+      {
+        id: commentary_id,
+      },
+      { outFormat: OUT_FORMAT_OBJECT },
+    );
+    return rows && rows.length ? rows[0] : null;
   }
 
   async createCommentary(body: ICreateCommentaryParams) {

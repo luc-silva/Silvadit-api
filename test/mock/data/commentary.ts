@@ -1,7 +1,7 @@
 import { CreatePostCommentaryDTO } from '~/api/commentary/types/commentary.dto';
 
 export const createRawCommentaryMock = (
-  data?: ICommentaryRaw,
+  data?: Partial<ICommentaryRaw>,
 ): ICommentaryRaw => {
   return {
     content: 'Lorem Teste',
@@ -13,6 +13,8 @@ export const createRawCommentaryMock = (
     replyId: 'COMMENT',
     user_id: 'USER123',
     user_username: 'USER',
+    likes: 30,
+    replies_total: 3,
     ...data,
   };
 };
@@ -28,6 +30,9 @@ export const createCommentaryOutputMock = (
     post: { id: 'POST23', title: 'Lorem Post Commentary Mock' },
     replyId: 'COMMENT',
     user: { id: 'USER123', username: 'USER' },
+    likes: 30,
+    repliesTotal: 3,
+    replies: [],
     ...data,
   };
 };
@@ -50,7 +55,7 @@ export const createPostCommentaryDTO = (
   return {
     content: 'Lorem Lorem Lorem',
     postId: 'LOREMAVB',
-    replyId: "REPLY123",
+    replyId: 'REPLY123',
     ...data,
   };
 };

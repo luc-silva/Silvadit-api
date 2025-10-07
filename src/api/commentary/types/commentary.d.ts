@@ -6,10 +6,12 @@ interface ICommentaryRaw {
   post_title: string;
   user_id: string;
   user_username: string;
-  content;
-  replyId;
-  dateCreated;
-  dateEdited;
+  content: string;
+  replyId: string;
+  dateCreated: Date;
+  dateEdited: Date;
+  likes: number;
+  replies_total: number;
 }
 interface ICommentaryOutput {
   id: string;
@@ -18,8 +20,11 @@ interface ICommentaryOutput {
     title: string;
   };
   user: { id: string; username: string } | null;
-  content;
-  replyId;
-  dateCreated;
-  dateEdited;
+  content: string;
+  replyId: string;
+  dateCreated: Date;
+  dateEdited: Date;
+  likes: number;
+  replies: ICommentary[];
+  repliesTotal: number;
 }
