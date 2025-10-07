@@ -162,101 +162,123 @@ describe('postService', () => {
     });
   });
 
-  describe('POST', () => {
-    describe('createCommentary', () => {
-      it('Should create exception if user has not been found', async () => {
-        const data = createPostCommentaryDTO();
-        const session = createSessionMock();
-        await expect(
-          postService.createPostCommentary(data, session),
-        ).rejects.toThrow('User not found.');
-      });
-
-      it('Should create exception if DTO is invalid', async () => {
-        const data = {
-          ...createPostCommentaryDTO(),
-          content: null,
-        } as unknown as CreatePostCommentaryDTO;
-        const session = createSessionMock();
-
-        userRepository.getUserByIdOrUsername.mockResolvedValue(
-          createCompletedUserData(),
-        );
-
-        await expect(
-          postService.createPostCommentary(data, session),
-        ).rejects.toThrow('Invalid data.');
-      });
-
-      it('Should call repository correctly', async () => {
-        const userId = '123';
-        const session = createSessionMock();
-        const mockedDto = createPostCommentaryDTO();
-        const expectCalledWith = createCommentaryParamsMock({ userId });
-
-        userRepository.getUserByIdOrUsername.mockResolvedValue(
-          createCompletedUserData({ userId }),
-        );
-
-        await expect(postService.createPostCommentary(mockedDto, session))
-          .resolves;
-        await expect(
-          commentaryRepository.createCommentary,
-        ).toHaveBeenCalledWith(expectCalledWith);
-      });
+  describe('createCommentary', () => {
+    it('Should create exception if user has not been found', async () => {
+      const data = createPostCommentaryDTO();
+      const session = createSessionMock();
+      await expect(
+        postService.createPostCommentary(data, session),
+      ).rejects.toThrow('User not found.');
     });
 
-    describe('getPostDetails', () => {
-      it('should create exception if post has not been found', async () => {
-        const postId = '123';
-        await expect(postService.getPostDetails(postId)).rejects.toThrow(
-          'Post not found.',
-        );
-      });
+    it('Should create exception if DTO is invalid', async () => {
+      const data = {
+        ...createPostCommentaryDTO(),
+        content: null,
+      } as unknown as CreatePostCommentaryDTO;
+      const session = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData(),
+      );
+
+      await expect(
+        postService.createPostCommentary(data, session),
+      ).rejects.toThrow('Invalid data.');
     });
 
-    describe('updatePost', () => {
-      it('Should create exception if post has not been found', async () => {
-        const data = createPostUpdateDto();
-        const session = createSessionMock();
+    it('Should call repository correctly', async () => {
+      const userId = '123';
+      const session = createSessionMock();
+      const mockedDto = createPostCommentaryDTO();
+      const expectCalledWith = createCommentaryParamsMock({ userId });
 
-        postRepository.getPostDetails.mockResolvedValue(null);
-        await expect(postService.updatePost(data, session)).rejects.toThrow(
-          'Post not found.',
-        );
-      });
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId }),
+      );
 
-      it('Should create exception if user has not been found', async () => {
-        const data = createPostUpdateDto();
-        const session = createSessionMock();
+      await expect(postService.createPostCommentary(mockedDto, session))
+        .resolves;
+      await expect(commentaryRepository.createCommentary).toHaveBeenCalledWith(
+        expectCalledWith,
+      );
+    });
+  });
 
-        postRepository.getPostDetails.mockResolvedValue(
-          createPostRaw({ owner_id: '123' }),
-        );
+  describe('getPostDetails', () => {
+    it('should create exception if post has not been found', async () => {
+      const postId = '123';
+      await expect(postService.getPostDetails(postId)).rejects.toThrow(
+        'Post not found.',
+      );
+    });
+  });
 
-        userRepository.getUserByIdOrUsername.mockResolvedValue(null);
+  describe('updatePost', () => {
+    it('Should create exception if post has not been found', async () => {
+      const data = createPostUpdateDto();
+      const session = createSessionMock();
 
-        await expect(postService.updatePost(data, session)).rejects.toThrow(
-          'User not found.',
-        );
-      });
+      postRepository.getPostDetails.mockResolvedValue(null);
+      await expect(postService.updatePost(data, session)).rejects.toThrow(
+        'Post not found.',
+      );
+    });
 
-      it('Should create exception if post owner is diferrent from user F', async () => {
-        const data = createPostUpdateDto();
-        const session = createSessionMock();
+    it('Should create exception if user has not been found', async () => {
+      const data = createPostUpdateDto();
+      const session = createSessionMock();
 
-        postRepository.getPostDetails.mockResolvedValue(
-          createPostRaw({ owner_id: '123' }),
-        );
+      postRepository.getPostDetails.mockResolvedValue(
+        createPostRaw({ owner_id: '123' }),
+      );
 
-        userRepository.getUserByIdOrUsername.mockResolvedValue(
-          createCompletedUserData({ userId: '456' }),
-        );
+      userRepository.getUserByIdOrUsername.mockResolvedValue(null);
 
-        await expect(postService.updatePost(data, session)).rejects.toThrow(
-          'User is not owner of the post.',
-        );
-      });
+      await expect(postService.updatePost(data, session)).rejects.toThrow(
+        'User not found.',
+      );
+    });
+
+    it('Should create exception if post owner is diferrent from user F', async () => {
+      const data = createPostUpdateDto();
+      const session = createSessionMock();
+
+      postRepository.getPostDetails.mockResolvedValue(
+        createPostRaw({ owner_id: '123' }),
+      );
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId: '456' }),
+      );
+
+      await expect(postService.updatePost(data, session)).rejects.toThrow(
+        'User is not owner of the post.',
+      );
+    });
+  });
+
+  describe('deletePost',  () => {
+    it('Should throw exception when user from session has not been found', async () => {
+      const id = '123';
+      const session = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(null)
+      
+      expect(postService.deletePost(id, session)).rejects.toThrow(
+        'User not found.',
+      );
+    });
+    
+    it('Should throw exception when post has not been found', async () => {
+      const id = '123';
+      const session = createSessionMock();
+      
+      userRepository.getUserByIdOrUsername.mockResolvedValue(createCompletedUserData())
+
+      expect(postService.deletePost(id, session)).rejects.toThrow(
+        'Post not found.',
+      );
     });
   });
 });

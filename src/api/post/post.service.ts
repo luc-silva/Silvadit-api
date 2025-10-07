@@ -1,11 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreatePostCommentaryDTO } from '../commentary/types/commentary.dto';
-import {
-  CreatePostDTO,
-  DeletePostDTO,
-  ReactPostDTO,
-  UpdatePostDTO,
-} from './types/post.dto';
+import { CreatePostDTO, ReactPostDTO, UpdatePostDTO } from './types/post.dto';
 import {
   COMMENTARY_REPOSITORY_TOKEN,
   CommentaryRepositoryBase,
@@ -60,9 +55,14 @@ export class PostService {
     return await this.postRepository.updatePost(parsedData);
   }
 
-  async deletePost(body: DeletePostDTO) {
-    const postId = body.post_id as PostID;
-    return await this.postRepository.deletePost(postId);
+  async deletePost(id: string, session: ISession) {
+    const user = await this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) throw new Error('User not found.');
+
+    const post = await this.postRepository.getPostDetails(id as PostID);
+    if (!post) throw new Error('Post not found.');
+
+    return await this.postRepository.deletePost(id as PostID);
   }
 
   async reactPost(body: ReactPostDTO) {

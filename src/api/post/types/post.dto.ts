@@ -23,11 +23,6 @@ export class CreatePostDTO {
   isNsfw: string;
 }
 
-export class DeletePostDTO {
-  @IsString()
-  post_id: string;
-}
-
 export class ReactPostDTO {
   @IsString()
   post_id: string;
