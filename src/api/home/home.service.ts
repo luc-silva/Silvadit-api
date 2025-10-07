@@ -22,13 +22,14 @@ export class HomeService {
     return await this.postRepository.getTrendingPosts();
   }
 
-  async getFeed(session: ISession): Promise<IPostOutput[]> {
+  //TODO: adapt feed to no session
+  async getFeed(session: ISession): Promise<IFeedOutput[]> {
     const user = await this.userRepository.getUserByIdOrUsername(session.id);
     if (!user) {
       throw new Error('User not found.');
     }
 
-    const data = await this.userRepository.getUserFeed(user.userId as UserID)
+    const data = await this.userRepository.getUserFeed(user.userId as UserID);
 
     return HomepageMapper.mapRawFeed(data);
   }

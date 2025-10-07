@@ -18,7 +18,7 @@ export const createFeedItem = (data?: IFeedOutput): IFeedOutput => {
     forum: null,
     isNsfw: false,
     owner: {
-      userId: 'ABC',
+      id: 'ABC',
       username: 'ABCDEF',
     },
     postId: '123ABC',

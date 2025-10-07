@@ -1,5 +1,20 @@
 //change to also include commentaries
-type IFeedOutput = IPostOutput;
+type IFeedOutput = {
+  postId: string;
+  owner: {
+    id: string;
+    username: string;
+  };
+  forum: {
+    name: string;
+    id: string;
+  } | null;
+  content: string;
+  title: string;
+  isNsfw: boolean;
+  dateCreated: Date;
+  dateEdited: Date | null;
+};
 
 interface IRawBasicFeed {
   title: string;
