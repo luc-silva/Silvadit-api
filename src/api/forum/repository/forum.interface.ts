@@ -1,8 +1,8 @@
 interface ICreateForumParams {
   name: string;
   description: string;
-  forum_id: ForumID;
-  date_created: Date;
+  is_nsfw: IYesNo;
+  is_private: IYesNo;
 }
 
 interface IUpdateForumParams {
@@ -13,8 +13,8 @@ interface IUpdateForumParams {
 interface IFollowForumParams {
   user_id: UserID;
   forum_id: ForumID;
-  is_admin: 'S' | 'N';
-  is_founder: 'S' | 'N';
+  is_admin: IYesNo;
+  is_founder: IYesNo;
   date_created: Date;
 }
 

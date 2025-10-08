@@ -3,11 +3,11 @@ import { ForumRepositoryBase } from '~/api/forum/repository/forum.repository.bas
 export class MockForumRepository implements jest.Mocked<ForumRepositoryBase> {
   createForum = jest.fn<Promise<void>, [ICreateForumParams]>();
 
-  getForumDetails = jest.fn<Promise<IForum | null>, [ForumID]>();
+  getForumDetails = jest.fn<Promise<IForumRaw | null>, [ForumID]>();
 
   updateForum = jest.fn<Promise<void>, [IUpdateForumParams]>();
 
-  getTrendingForums = jest.fn<Promise<IForum[]>, []>();
+  getTrendingForums = jest.fn<Promise<IForumRaw[]>, []>();
 
   followForum = jest.fn<Promise<void>, [IFollowForumParams]>();
 

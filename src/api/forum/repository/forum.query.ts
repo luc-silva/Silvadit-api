@@ -1,16 +1,43 @@
 export class ForumQuery {
-  public static createForum(columns: string[], values: string[]) {
+  public static createForum() {
     return `
-      INSERT INTO FORUM (${columns})
-      VALUES (${values})
+      INSERT INTO FORUMS (
+        NAME,
+        DESCRIPTION,
+        IS_PRIVATE,
+        IS_NSFW
+      )
+      VALUES (
+        :name,
+        :description,
+        :is_private,
+        :is_nsfw
+      )
     `;
   }
 
   public static getForumDetails() {
     return `
-      SELECT *
-      FROM FORUM
-      WHERE FORUM_ID = :forum_id
+      SELECT 
+        F.NAME "name",
+        F.DESCRIPTION "description",
+        F.IS_PRIVATE "isPrivate",
+        F.BANNED "banned",
+        F.IS_NSFW "isNsfw",
+        F.DATE_CREATED "dateCreated",
+        F.DATE_EDITED "dateEdited",
+        (
+          SELECT COUNT(*)
+          FROM FORUM_MEMBERS
+          WHERE FORUM_ID = :forum_id
+        ) "followers_total",
+        (
+          SELECT COUNT(*)
+          FROM POSTS
+          WHERE FORUM_ID = :forum_id
+        ) "posts_total"        
+      FROM FORUMS F
+      WHERE RAWTOHEX(FORUM_ID) = :forum_id
     `;
   }
 
@@ -60,6 +87,6 @@ export class ForumQuery {
       FROM FORUMS F, FORUMS_MEMBERS FM
       WHERE RAWTOHEX(F.FORUM_ID) = RAWTOHEX(FM.FORUM_ID)(+)
         AND FM.USER_ID = :userId
-    `
+    `;
   }
 }

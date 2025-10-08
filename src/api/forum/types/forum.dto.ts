@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsString } from 'class-validator';
 
 export class CreateForumDataDTO {
   @IsString()
@@ -7,11 +7,14 @@ export class CreateForumDataDTO {
   @IsString()
   description: string;
 
-  @IsString()
-  forum_id: string;
+  @IsBoolean()
+  isNsfw: boolean;
 
-  @IsDate()
-  date_created: Date;
+  @IsBoolean()
+  isPrivate: boolean;
+
+  @IsArray()
+  tags: string[];
 }
 
 export class UpdateForumDataDTO {

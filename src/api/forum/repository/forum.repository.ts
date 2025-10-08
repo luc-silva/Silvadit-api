@@ -4,30 +4,26 @@ import { insertQueryHelper } from 'src/utils/insertQueryHelper';
 import { updateQueryHelper } from 'src/utils/updateQueryHelper';
 import { ForumRepositoryBase } from './forum.repository.base';
 import { ForumQuery } from './forum.query';
+import { OUT_FORMAT_OBJECT } from 'oracledb';
 
 @Injectable()
 export class ForumRepository implements ForumRepositoryBase {
   async createForum(data: ICreateForumParams) {
     const connection = await getConnection();
-    const { binds, columns, values } = insertQueryHelper(
-      {
-        name: 'USER_ID',
-        description: 'POST_ID',
-        forum_id: 'FORUM_ID',
-        date_created: 'DATE_CREATED',
-      },
-      data,
-    );
 
-    const query = ForumQuery.createForum(columns, values);
-    await connection.execute(query, binds);
+    const query = ForumQuery.createForum();
+    await connection.execute(query, data, {});
   }
 
   async getForumDetails(forum_id: ForumID) {
     const connection = await getConnection();
 
     const query = ForumQuery.getForumDetails();
-    const { rows } = await connection.execute<IForum>(query, { forum_id });
+    const { rows } = await connection.execute<IForumRaw>(
+      query,
+      { forum_id },
+      { outFormat: OUT_FORMAT_OBJECT },
+    );
     return rows && rows.length ? rows[0] : null;
   }
 
@@ -49,7 +45,7 @@ export class ForumRepository implements ForumRepositoryBase {
     const query = ForumQuery.getTrendingForums();
 
     const connection = await getConnection();
-    const { rows } = await connection.execute<IForum>(query, {});
+    const { rows } = await connection.execute<IForumRaw>(query, {});
     return rows && rows.length ? rows : [];
   }
 

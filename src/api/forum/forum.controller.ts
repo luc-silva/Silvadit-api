@@ -4,8 +4,9 @@ import {
   BanUserDTO,
   CreateForumDataDTO,
   FollowForumDataDTO,
-  UnfollowForumDataDTO,
 } from './types/forum.dto';
+import { ExtractUser } from '~/utils/decorators/extract-user';
+import { Public } from '~/utils/decorators/protect-routes';
 
 @Controller('forum')
 export class ForumController {
@@ -17,6 +18,7 @@ export class ForumController {
   }
 
   @Get(':id')
+  @Public()
   async getForumDetails(@Param('id') id: string) {
     return await this.forumService.getForumDetails(id);
   }
@@ -32,7 +34,10 @@ export class ForumController {
   }
 
   @Post()
-  async createForum(@Body() body: CreateForumDataDTO) {
-    return await this.forumService.createForum(body);
+  async createForum(
+    @Body() body: CreateForumDataDTO,
+    @ExtractUser() user: ISession,
+  ) {
+    return await this.forumService.createForum(body, user);
   }
 }

@@ -7,7 +7,6 @@ import { USER_REPOSITORY_TOKEN } from '~/api/user/repository/user.repository.tok
 import { MockUserRepository } from 'test/mock/repositories/user.repository';
 import { MockCommentaryRepository } from 'test/mock/repositories/commentary.repository';
 import { PostValidator } from '~/api/post/utils/post.validator';
-import { createPostDTO } from 'test/mock/data/home';
 import { CreatePostDTO } from '~/api/post/types/post.dto';
 import {
   createCommentaryParamsMock,
@@ -18,6 +17,7 @@ import { CreatePostCommentaryDTO } from '~/api/commentary/types/commentary.dto';
 import { createCompletedUserData } from 'test/mock/data/user';
 import { PostMapper } from '~/api/post/utils/post.mapper';
 import {
+  createPostDTO,
   createPostOutput,
   createPostRaw,
   createPostUpdateDto,

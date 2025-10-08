@@ -1,12 +1,14 @@
 type ForumID = Branded<string, string>;
 
-interface IForum {
+interface IForumRaw {
   forumId: string;
   name: string;
   description: string;
   dateCreated: Date;
   dateEdited: Date;
   banned: 'S' | 'N';
+  followersTotal: number;
+  postsTotal: number;
 }
 
 interface IForumMember {
@@ -15,13 +17,4 @@ interface IForumMember {
   dateSubscribed;
 }
 
-type ISubscribedForum = Omit<IForum, 'dateEdited'> & IForumMember;
-
-interface IForumOutput {
-  forumId: string;
-  name: string;
-  description: string;
-  dateCreated: Date;
-  dateEdited: Date;
-  banned: boolean;
-}
+type ISubscribedForum = Omit<IForumRaw, 'dateEdited'> & IForumMember;

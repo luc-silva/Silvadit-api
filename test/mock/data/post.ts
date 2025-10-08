@@ -1,4 +1,4 @@
-import { UpdatePostDTO } from '~/api/post/types/post.dto';
+import { CreatePostDTO, UpdatePostDTO } from '~/api/post/types/post.dto';
 
 export const createPostRaw = (data?: Partial<IPostRaw>): IPostRaw => {
   return {
@@ -46,6 +46,29 @@ export const createPostOutput = (data?: Partial<IPostOutput>): IPostOutput => {
       username: 'USERUSERNAME',
       followers: 5,
     },
+    ...data,
+  };
+};
+
+export const createPostDTO = (data?: Partial<CreatePostDTO>): CreatePostDTO => {
+  return {
+    content: 'Lorem lorem content',
+    isNsfw: 'false',
+    title: 'Lorem Title',
+    forumId: 'Lorem Forum',
+    ...data,
+  };
+};
+
+export const createPostCreateParams = (
+  data?: Partial<ICreatePostParams>,
+): ICreatePostParams => {
+  return {
+    content: 'Lorem lorem content',
+    is_nsfw: 'N',
+    title: 'Lorem Title',
+    forum_id: 'Lorem Forum',
+    user_id: '123',
     ...data,
   };
 };

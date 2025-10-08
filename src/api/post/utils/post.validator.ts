@@ -20,7 +20,6 @@ export class PostValidator {
     const result = createPostSchema.safeParse(data);
 
     if (!result.success) {
-      console.log(zod.treeifyError(result.error));
       throw new Error('Invalid data.');
     }
   }
@@ -29,7 +28,6 @@ export class PostValidator {
     const result = createPostCommentarySchema.safeParse(data);
 
     if (!result.success) {
-      console.log(zod.treeifyError(result.error));
       throw new Error('Invalid data.');
     }
   }
