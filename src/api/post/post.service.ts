@@ -62,6 +62,9 @@ export class PostService {
     const post = await this.postRepository.getPostDetails(id as PostID);
     if (!post) throw new Error('Post not found.');
 
+    if (user.userId !== post.owner_id)
+      throw new Error('User is not owner of the post.');
+
     return await this.postRepository.deletePost(id as PostID);
   }
 

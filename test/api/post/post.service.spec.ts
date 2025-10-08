@@ -240,7 +240,7 @@ describe('postService', () => {
       );
     });
 
-    it('Should create exception if post owner is diferrent from user F', async () => {
+    it('Should create exception if post owner is diferrent from user', async () => {
       const data = createPostUpdateDto();
       const session = createSessionMock();
 
@@ -258,26 +258,45 @@ describe('postService', () => {
     });
   });
 
-  describe('deletePost',  () => {
+  describe('deletePost', () => {
     it('Should throw exception when user from session has not been found', async () => {
       const id = '123';
       const session = createSessionMock();
 
-      userRepository.getUserByIdOrUsername.mockResolvedValue(null)
-      
+      userRepository.getUserByIdOrUsername.mockResolvedValue(null);
+
       expect(postService.deletePost(id, session)).rejects.toThrow(
         'User not found.',
       );
     });
-    
+
     it('Should throw exception when post has not been found', async () => {
       const id = '123';
       const session = createSessionMock();
-      
-      userRepository.getUserByIdOrUsername.mockResolvedValue(createCompletedUserData())
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData(),
+      );
 
       expect(postService.deletePost(id, session)).rejects.toThrow(
         'Post not found.',
+      );
+    });
+
+    it('Should create exception if post owner is diferrent from user', async () => {
+      const id = '123';
+      const session = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId: '123' }),
+      );
+
+      postRepository.getPostDetails.mockResolvedValue(
+        createPostRaw({ owner_id: '1234' }),
+      );
+
+      expect(postService.deletePost(id, session)).rejects.toThrow(
+        'User is not owner of the post.',
       );
     });
   });
