@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createForum, createForumOutput } from 'test/mock/data/forum';
 import { createCompletedUserData, createUserOutput } from 'test/mock/data/user';
-import { MockForumRepository } from 'test/mock/repositories/forum.repository';
+import { MockForumMembersRepository } from 'test/mock/repositories/forum_members.repository';
 import { MockPostRepository } from 'test/mock/repositories/post.repository';
 import { MockUserRepository } from 'test/mock/repositories/user.repository';
-import { FORUM_REPOSITORY_TOKEN } from '~/api/forum/repository/forum.repository.base';
+import { FORUM_MEMBERS_REPOSITORY_TOKEN } from '~/api/forum_members/repository/forum_members.repository.base';
 import { POST_REPOSITORY_TOKEN } from '~/api/post/repository/post.repository.base';
 import { USER_REPOSITORY_TOKEN } from '~/api/user/repository/user.repository.token';
 import { UserService } from '~/api/user/user.service';
@@ -13,12 +12,12 @@ describe('UserService', () => {
   let userService: UserService;
   let userRepository: MockUserRepository;
   let postRepository: MockPostRepository;
-  let forumRepository: MockForumRepository;
+  let forumMembersRepository: MockForumMembersRepository;
 
   beforeEach(async () => {
     userRepository = new MockUserRepository();
     postRepository = new MockPostRepository();
-    forumRepository = new MockForumRepository();
+    forumMembersRepository = new MockForumMembersRepository();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -32,7 +31,7 @@ describe('UserService', () => {
           useValue: {},
         },
         {
-          provide: FORUM_REPOSITORY_TOKEN,
+          provide: FORUM_MEMBERS_REPOSITORY_TOKEN,
           useValue: {},
         },
       ],
@@ -41,8 +40,8 @@ describe('UserService', () => {
       .useValue(userRepository)
       .overrideProvider(POST_REPOSITORY_TOKEN)
       .useValue(postRepository)
-      .overrideProvider(FORUM_REPOSITORY_TOKEN)
-      .useValue(forumRepository)
+      .overrideProvider(FORUM_MEMBERS_REPOSITORY_TOKEN)
+      .useValue(forumMembersRepository)
       .compile();
 
     userService = module.get<UserService>(UserService);
@@ -109,10 +108,10 @@ describe('UserService', () => {
         createUserOutput({ userId }),
       );
 
-      forumRepository.getForumsFromUser.mockResolvedValue([]);
+      forumMembersRepository.getForumsFromUser.mockResolvedValue([]);
 
       await expect(userService.getUserSubscribedForums(userId)).resolves;
-      expect(forumRepository.getForumsFromUser).toHaveBeenCalledWith(userId);
+      expect(forumMembersRepository.getForumsFromUser).toHaveBeenCalledWith(userId);
     });
 
     it('getUserFollowedUsers - should create exception if user is invalid', async () => {
@@ -133,9 +132,10 @@ describe('UserService', () => {
         createUserOutput({ userId }),
       );
 
-
       await expect(userService.getUserFollowedUsers(userId)).resolves;
-      expect(userRepository.getUserFollowingAccounts).toHaveBeenCalledWith(userId);
+      expect(userRepository.getUserFollowingAccounts).toHaveBeenCalledWith(
+        userId,
+      );
     });
 
     it('getUserFollowers - should list user followers correctly', () => {

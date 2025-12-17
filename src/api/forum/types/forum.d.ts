@@ -10,11 +10,3 @@ interface IForumRaw {
   followersTotal: number;
   postsTotal: number;
 }
-
-interface IForumMember {
-  isAdmin: 'S' | 'N';
-  isFounder: 'S' | 'N';
-  dateSubscribed;
-}
-
-type ISubscribedForum = Omit<IForumRaw, 'dateEdited'> & IForumMember;

@@ -7,11 +7,12 @@ import {
   POST_REPOSITORY_TOKEN,
   PostRepositoryBase,
 } from '../post/repository/post.repository.base';
-import {
-  FORUM_REPOSITORY_TOKEN,
-  ForumRepositoryBase,
-} from '../forum/repository/forum.repository.base';
 import { PostMapper } from '../post/utils/post.mapper';
+import {
+  FORUM_MEMBERS_REPOSITORY_TOKEN,
+  ForumMembersRepositoryBase,
+} from '../forum_members/repository/forum_members.repository.base';
+import { ForumMembersMapper } from '../forum_members/utils/forum_members.mapper';
 
 @Injectable()
 export class UserService {
@@ -20,8 +21,8 @@ export class UserService {
     private readonly userRepository: UserRepositoryBase,
     @Inject(POST_REPOSITORY_TOKEN)
     private readonly postRepository: PostRepositoryBase,
-    @Inject(FORUM_REPOSITORY_TOKEN)
-    private readonly forumRepository: ForumRepositoryBase,
+    @Inject(FORUM_MEMBERS_REPOSITORY_TOKEN)
+    private readonly forumMembersRepository: ForumMembersRepositoryBase,
   ) {}
 
   async getUserFollowers(id: string) {
@@ -71,26 +72,17 @@ export class UserService {
 
   async getUserLoginData() {}
 
-  async getUserSubscribedForums(id: string): Promise<ISubscribedForum[]> {
+  async getUserSubscribedForums(id: string): Promise<ISubscribedForumOutput[]> {
     const data = await this.userRepository.getUserDetails(id);
     if (!data) {
       throw new Error('User not found.');
     }
 
-    const forums = await this.forumRepository.getForumsFromUser(id as UserID);
+    const forums = await this.forumMembersRepository.getForumsFromUser(
+      id as UserID,
+    );
 
-    return forums.map((forum) => ({
-      banned: forum.banned,
-      dateCreated: forum.dateCreated,
-      description: forum.description,
-      forumId: forum.forumId,
-      name: forum.name,
-      dateSubscribed: forum.dateSubscribed,
-      isAdmin: forum.isAdmin,
-      isFounder: forum.isFounder,
-      followersTotal: forum.followersTotal,
-      postsTotal: forum.postsTotal,
-    }));
+    return forums.map(ForumMembersMapper.subscribedForum);
   }
 
   async getUserFollowedUsers(id: string): Promise<ISubscribedUser[]> {
@@ -102,14 +94,11 @@ export class UserService {
     return this.userRepository.getUserFollowingAccounts(data.userId as UserID);
   }
 
-  //n lembro o propsito desse. saved post?
-  async getUserSavedForums(id: string) {
+  async getUserSavedPosts(id: string) {
     const data = await this.userRepository.getUserDetails(id);
     if (!data) {
       throw new Error('User not found.');
     }
-
-    return await this.forumRepository.getForumsFromUser(id as UserID);
   }
 
   async getUserActivity(id: string): Promise<IActivity[]> {

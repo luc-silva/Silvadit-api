@@ -15,7 +15,4 @@ export interface ForumRepositoryBase {
 
   banUserFromForum(data: IBanUserParams): Promise<void>;
 
-  //filtro?
-  getForumsFromUser(user_id: UserID): Promise<ISubscribedForum[]>;
-
 }
