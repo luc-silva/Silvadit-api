@@ -2,18 +2,19 @@ import { MockUserRepository } from 'test/mock/repositories/user.repository';
 import { AuthService } from '~/api/auth/auth.service';
 import {
   CreateUserDTO,
-  UpdateUserDTO,
+  UpdateUserEmailDTO,
   UserLoginDTO,
 } from '~/api/auth/types/auth.dto';
 import { AuthValidator } from '~/api/auth/utils/Auth.validator';
 import { TestingModule, Test } from '@nestjs/testing';
 import { USER_REPOSITORY_TOKEN } from '~/api/user/repository/user.repository.token';
-import { createCompletedUserData, createUserOutput } from 'test/mock/data/user';
+import { createCompletedUserData } from 'test/mock/data/user';
 import { AuthMapper } from '~/api/auth/utils/auth.mapper';
+import { ICreateUserParams } from '~/api/user/repository/user.interface';
 import {
-  ICreateUserParams,
-  IUpdateUserParams,
-} from '~/api/user/repository/user.interface';
+  createSessionMock,
+  createUpdateUserEmailDTO,
+} from 'test/mock/data/auth';
 
 describe('authService', () => {
   let authService: AuthService;
@@ -105,25 +106,17 @@ describe('authService', () => {
       expect(mapped).toEqual(mockedExpectedResult);
     });
 
-    it('Should map update correctly', () => {
-      const mockedExpectedResult: IUpdateUserParams = {
-        country: 'BR',
-        description: 'Lorem lorem',
-        first_name: 'Teste',
-        last_name: 'Santos',
-        state: 'SP',
-      };
-
-      const value: UpdateUserDTO = {
-        country: 'BR',
-        description: 'Lorem lorem',
-        firstName: 'Teste',
-        lastName: 'Santos',
-        state: 'SP',
+    it('Should map update email correctly', () => {
+      const mockedExpectedResult: IUpdateUserEmailParams = {
         email: 'teste@teste',
         newEmail: 'teste2@teste',
       };
-      const mapped = AuthMapper.toUpdate(value);
+
+      const value: IUpdateUserEmailParams = {
+        email: 'teste@teste',
+        newEmail: 'teste2@teste',
+      };
+      const mapped = AuthMapper.toUpdateUserEmail(value);
 
       expect(mapped).toEqual(mockedExpectedResult);
     });
@@ -263,56 +256,48 @@ describe('authService', () => {
     });
   });
 
-  describe('PUT - updateUser', () => {
-    it('Should throw error if user submit invalid email', async () => {
-      const mock: UpdateUserDTO = {
-        country: 'TESTE_BR',
-        email: 'EMAIL@TESTE.com',
-        newEmail: 'novo',
-        firstName: 'Teste',
-        lastName: 'Da Silva',
-        state: 'BR',
-        description: '',
-      };
+  describe('PUT - updateUserEmail', () => {
+    it('Should throw error if session user has not been found', async () => {
+      const dto = createUpdateUserEmailDTO();
+      const session = createSessionMock();
 
-      await expect(authService.updateUser(mock)).rejects.toThrow(
+      await expect(authService.updateUserEmail(dto, session)).rejects.toThrow(
+        'User not found.',
+      );
+    });
+
+    it('Should throw error if user submit invalid email', async () => {
+      const mock = createUpdateUserEmailDTO({newEmail: "abc"});
+      const session = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(createCompletedUserData())
+
+      await expect(authService.updateUserEmail(mock, session)).rejects.toThrow(
         'Invalid email pattern',
       );
     });
 
     it('should create exception if user tries to update an account with a registered email', async () => {
-      const mock: UpdateUserDTO = {
-        country: 'TESTE_BR',
-        email: 'EMAIL@TESTE.com',
-        newEmail: 'novo@email.com',
-        firstName: 'Teste',
-        lastName: 'Da Silva',
-        state: 'BR',
-        description: '',
-      };
+      const mock = createUpdateUserEmailDTO();
+      const session = createSessionMock();
       const mockResult: ICompleteUser = createCompletedUserData();
 
+      userRepository.getUserByIdOrUsername.mockResolvedValue(createCompletedUserData())
       userRepository.getUserDataByEmail.mockResolvedValue(mockResult);
 
-      await expect(authService.updateUser(mock)).rejects.toThrow(
+      await expect(authService.updateUserEmail(mock, session)).rejects.toThrow(
         'There is already an account using this email',
       );
     });
 
     it('should not create exception if user tries to update an account with a not registered email', async () => {
-      const mock: UpdateUserDTO = {
-        country: 'TESTE_BR',
-        email: 'EMAIL@TESTE.com',
-        newEmail: 'novo@email.com',
-        firstName: 'Teste',
-        lastName: 'Da Silva',
-        state: 'BR',
-        description: '',
-      };
+      const mock = createUpdateUserEmailDTO();
+      const session = createSessionMock();
 
+      userRepository.getUserByIdOrUsername.mockResolvedValue(createCompletedUserData())
       userRepository.getUserDataByEmail.mockResolvedValue(null);
 
-      await expect(authService.updateUser(mock)).resolves.not.toThrow(
+      await expect(authService.updateUserEmail(mock, session)).resolves.not.toThrow(
         'There is already an account using this email',
       );
     });

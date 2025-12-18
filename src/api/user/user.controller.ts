@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDTO } from '../auth/types/auth.dto';
 import { Public } from '~/utils/decorators/protect-routes';
+import { ExtractUser } from '~/utils/decorators/extract-user';
+import { UpdateUserDetailsDTO, UpdateUserLocationDTO } from './types/user.dto';
 
 @Controller('user')
 export class UserController {
@@ -36,9 +37,13 @@ export class UserController {
     return await this.userService.getUserActivity(id);
   }
 
-  @Put()
-  @Public()
-  async update(@Body() body: UpdateUserDTO) {
-    return await this.userService.updateUserDetails(body);
+  @Put("details")
+  async updateUserDetails(@Body() body: UpdateUserDetailsDTO, @ExtractUser() user: ISession) {
+    return await this.userService.updateUserDetails(body, user);
+  }
+
+  @Put("location")
+  async updateUserLocation(@Body() body: UpdateUserLocationDTO, @ExtractUser() user: ISession) {
+    //return await this.userService.updateUserDetails(body, user);
   }
 }

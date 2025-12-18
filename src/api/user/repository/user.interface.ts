@@ -9,10 +9,10 @@ export interface ICreateUserParams {
   state: string;
 }
 
-export interface IUpdateUserParams {
+export interface IUpdateUserDetailsParams {
   first_name: string;
   last_name: string;
-  country: string;
-  state: string;
-  description: string;
+  description?: string | null;
+  username: string;
+  user_id: string
 }

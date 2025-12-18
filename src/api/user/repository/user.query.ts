@@ -84,6 +84,17 @@ export class UserQuery {
     `;
   }
 
+  public static updateUserDetails() {
+    return `
+      UPDATE USER_ACCOUNTS UA
+        SET UA.FIRST_NAME  = :first_name,
+            UA.LAST_NAME   = :last_name,
+            UA.USERNAME    = :username,
+            UA.DESCRIPTION = :description
+      WHERE RAWTOHEX(UA.USER_ID) = :user_id
+    `;
+  }
+
   public static checkIfEmailRegistered() {
     return `
       SELECT 1 "exist"

@@ -1,8 +1,9 @@
 import {
   ICreateUserParams,
-  IUpdateUserParams,
+  IUpdateUserDetailsParams,
 } from '~/api/user/repository/user.interface';
-import { CreateUserDTO, UpdateUserDTO } from '../types/auth.dto';
+import { CreateUserDTO, UpdateUserEmailDTO } from '../types/auth.dto';
+import { UpdateUserDetailsDTO } from '~/api/user/types/user.dto';
 
 export class AuthMapper {
   static toSession(user: ICompleteUser): ISession {
@@ -20,13 +21,10 @@ export class AuthMapper {
     };
   }
 
-  static toUpdate(data: UpdateUserDTO): IUpdateUserParams {
+  static toUpdateUserEmail(data: UpdateUserEmailDTO): IUpdateUserEmailParams {
     return {
-      country: data.country,
-      description: data.description,
-      first_name: data.firstName,
-      last_name: data.lastName,
-      state: data.state,
+      email: data.email,
+      newEmail: data.newEmail,
     };
   }
 

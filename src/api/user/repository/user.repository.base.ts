@@ -1,4 +1,4 @@
-import { ICreateUserParams, IUpdateUserParams } from './user.interface';
+import { ICreateUserParams, IUpdateUserDetailsParams } from './user.interface';
 
 export interface UserRepositoryBase {
   getUserFollowingAccounts(id: UserID): Promise<ISubscribedUser[]>;
@@ -19,7 +19,11 @@ export interface UserRepositoryBase {
     email: ValidatedUserEmail,
   ): Promise<DatabaseValidated | null>;
 
-  updateUser(data: IUpdateUserParams): Promise<void>;
+  updateUserDetails(data: IUpdateUserDetailsParams): Promise<void>;
+
+  updateUserLocation(data: IUpdateUserDetailsParams): Promise<void>;
+
+  updateUserEmail(data: IUpdateUserEmailParams): Promise<void>;
 
   getUserByLogin(login: string): Promise<ICompleteUser | null>;
 

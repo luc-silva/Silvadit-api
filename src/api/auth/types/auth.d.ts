@@ -9,3 +9,8 @@ interface ILoginDetails {
   id: string;
   token: string;
 }
+
+interface IUpdateUserEmailParams {
+  email: string;
+  newEmail: string;
+}

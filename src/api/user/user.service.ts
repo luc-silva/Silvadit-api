@@ -1,7 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserRepositoryBase } from './repository/user.repository.base';
-import { IUpdateUserParams } from './repository/user.interface';
-import { UpdateUserDTO } from '../auth/types/auth.dto';
 import { USER_REPOSITORY_TOKEN } from './repository/user.repository.token';
 import {
   POST_REPOSITORY_TOKEN,
@@ -13,6 +11,8 @@ import {
   ForumMembersRepositoryBase,
 } from '../forum_members/repository/forum_members.repository.base';
 import { ForumMembersMapper } from '../forum_members/utils/forum_members.mapper';
+import { UpdateUserDetailsDTO } from './types/user.dto';
+import { UserMapper } from './utils/user.mapper';
 
 @Injectable()
 export class UserService {
@@ -41,23 +41,22 @@ export class UserService {
     return data;
   }
 
-  async updateUserDetails(body: UpdateUserDTO) {
-    const params: IUpdateUserParams = {
-      country: body.country,
-      description: body.description,
-      first_name: body.firstName,
-      last_name: body.lastName,
-      state: body.state,
-    };
+  async updateUserDetails(body: UpdateUserDetailsDTO, session: ISession) {
+    const foundUser = await this.userRepository.getUserByIdOrUsername(
+      session.id,
+    );
+    if (!foundUser) {
+      throw new Error('User not found.');
+    }
 
-    return await this.userRepository.updateUser(params);
+    const params = UserMapper.toUpdateDetailsParams(body, foundUser)
+
+    return await this.userRepository.updateUserDetails(params);
   }
 
   async inactivateUser() {}
 
   async banUser() {}
-
-  async getUserComentaries() {}
 
   async getUserPosts(id: string): Promise<IPostOutput[]> {
     const user = await this.userRepository.getUserByIdOrUsername(id);

@@ -75,11 +75,11 @@ export class ForumRepository implements ForumRepositoryBase {
 
   async banUserFromForum(data: IBanUserParams) {}
 
-  async getForumsFromUser(userId: UserID): Promise<ISubscribedForum[]> {
+  async getForumsFromUser(userId: UserID): Promise<ISubscribedForumRaw[]> {
     const connection = await getConnection();
 
     const query = ForumQuery.getUserSubscribedForums();
-    const { rows } = await connection.execute<ISubscribedForum>(query, {
+    const { rows } = await connection.execute<ISubscribedForumRaw>(query, {
       userId,
     });
 

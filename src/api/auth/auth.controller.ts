@@ -1,7 +1,12 @@
 import { Body, Controller, Post, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserLoginDTO, CreateUserDTO, UpdateUserDTO } from './types/auth.dto';
+import {
+  UserLoginDTO,
+  CreateUserDTO,
+  UpdateUserEmailDTO,
+} from './types/auth.dto';
 import { Public } from '~/utils/decorators/protect-routes';
+import { ExtractUser } from '~/utils/decorators/extract-user';
 
 @Controller('auth')
 export class AuthController {
@@ -19,8 +24,11 @@ export class AuthController {
     return await this.authService.createUser(data);
   }
 
-  @Put('update')
-  async updateUser(@Body() data: UpdateUserDTO) {
-    return await this.authService.updateUser(data);
+  @Put('update/email')
+  async updateUserEmail(
+    @Body() data: UpdateUserEmailDTO,
+    @ExtractUser() session: ISession,
+  ) {
+    return await this.authService.updateUserEmail(data, session);
   }
 }

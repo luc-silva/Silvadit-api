@@ -38,23 +38,7 @@ export class CreateUserDTO {
   description: string;
 }
 
-export class UpdateUserDTO {
-  @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
-
-  @IsString()
-  country: string;
-
-  @IsString()
-  state: string;
-
-  @IsString()
-  @IsOptional()
-  description: string;
-
+export class UpdateUserEmailDTO {
   @IsString()
   email: string;
 

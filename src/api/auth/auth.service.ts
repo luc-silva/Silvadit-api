@@ -1,6 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserDTO, UpdateUserDTO, UserLoginDTO } from './types/auth.dto';
-import { ICreateUserParams, IUpdateUserParams } from '../user/repository/user.interface';
+import {
+  CreateUserDTO,
+  UpdateUserEmailDTO,
+  UserLoginDTO,
+} from './types/auth.dto';
+import { ICreateUserParams } from '../user/repository/user.interface';
 import { UserRepositoryBase } from '../user/repository/user.repository.base';
 import { AuthValidator } from './utils/Auth.validator';
 import { USER_REPOSITORY_TOKEN } from '../user/repository/user.repository.token';
@@ -15,7 +19,7 @@ export class AuthService {
   ) {}
   async login(data: UserLoginDTO): Promise<ILoginDetails> {
     const found = await this.userRepository.getUserByLogin(data.login);
-    
+
     if (!found) {
       throw new Error(
         'There is no account registered with that email or username',
@@ -32,8 +36,13 @@ export class AuthService {
     return AuthMapper.toLoginDetails(found, token);
   }
 
-  async updateUser(data: UpdateUserDTO) {
+  async updateUserEmail(data: UpdateUserEmailDTO, session: ISession) {
     AuthValidator.checkEmail(data.newEmail);
+
+    const user = this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) {
+      throw new Error('User not found.');
+    }
 
     const alreadyRegistered = await this.userRepository.getUserDataByEmail(
       data.newEmail,
@@ -42,9 +51,9 @@ export class AuthService {
       throw new Error('There is already an account using this email');
     }
 
-    const binds: IUpdateUserParams = AuthMapper.toUpdate(data)
+    const binds: IUpdateUserEmailParams = AuthMapper.toUpdateUserEmail(data);
 
-    return await this.userRepository.updateUser(binds);
+    return await this.userRepository.updateUserEmail(binds);
   }
 
   async createUser(data: CreateUserDTO) {
