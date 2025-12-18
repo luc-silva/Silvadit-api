@@ -95,6 +95,15 @@ export class UserQuery {
     `;
   }
 
+  public static updateUserLocation() {
+    return `
+      UPDATE USER_ACCOUNTS UA
+        SET UA.CITY   = :state,
+            UA.COUNTRY = :country
+      WHERE RAWTOHEX(UA.USER_ID) = :user_id
+    `;
+  }
+
   public static checkIfEmailRegistered() {
     return `
       SELECT 1 "exist"

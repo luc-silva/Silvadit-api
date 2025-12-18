@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { getConnection } from 'src/db';
 import { OUT_FORMAT_OBJECT } from 'oracledb';
 import { UserQuery } from './user.query';
-import { ICreateUserParams, IUpdateUserDetailsParams } from './user.interface';
+import { ICreateUserParams, IUpdateUserDetailsParams, IUpdateUserLocationParams } from './user.interface';
 import { UserRepositoryBase } from './user.repository.base';
 
 @Injectable()
@@ -110,7 +110,12 @@ export class UserRepository implements UserRepositoryBase {
 
   async updateUserEmail(data: IUpdateUserEmailParams) {}
 
-  async updateUserLocation(data: IUpdateUserDetailsParams) {}
+  async updateUserLocation(data: IUpdateUserLocationParams) {
+    const connection = await getConnection();
+    const query = UserQuery.updateUserLocation();
+
+    await connection.execute(query, data);
+  }
 
   async getUserPosts(id: UserID): Promise<IPostRaw[]> {
     const connection = await getConnection();

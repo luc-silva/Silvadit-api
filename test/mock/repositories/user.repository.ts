@@ -1,6 +1,7 @@
 import {
   ICreateUserParams,
   IUpdateUserDetailsParams,
+  IUpdateUserLocationParams,
 } from 'src/api/user/repository/user.interface';
 import { UserRepositoryBase } from 'src/api/user/repository/user.repository.base';
 
@@ -31,7 +32,7 @@ export class MockUserRepository implements jest.Mocked<UserRepositoryBase> {
 
   updateUserEmail = jest.fn<Promise<void>, [IUpdateUserEmailParams]>();
 
-  updateUserLocation = jest.fn<Promise<void>, [IUpdateUserDetailsParams]>();
+  updateUserLocation = jest.fn<Promise<void>, [IUpdateUserLocationParams]>();
 
   getUserByLogin = jest.fn<Promise<ICompleteUser | null>, [string]>();
 

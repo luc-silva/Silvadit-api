@@ -11,7 +11,7 @@ import {
   ForumMembersRepositoryBase,
 } from '../forum_members/repository/forum_members.repository.base';
 import { ForumMembersMapper } from '../forum_members/utils/forum_members.mapper';
-import { UpdateUserDetailsDTO } from './types/user.dto';
+import { UpdateUserDetailsDTO, UpdateUserLocationDTO } from './types/user.dto';
 import { UserMapper } from './utils/user.mapper';
 
 @Injectable()
@@ -52,6 +52,19 @@ export class UserService {
     const params = UserMapper.toUpdateDetailsParams(body, foundUser)
 
     return await this.userRepository.updateUserDetails(params);
+  }
+
+  async updateUserLocation(body: UpdateUserLocationDTO, session: ISession) {
+    const foundUser = await this.userRepository.getUserByIdOrUsername(
+      session.id,
+    );
+    if (!foundUser) {
+      throw new Error('User not found.');
+    }
+
+    const params = UserMapper.toUpdateLocationParams(body, foundUser)
+
+    return await this.userRepository.updateUserLocation(params);
   }
 
   async inactivateUser() {}

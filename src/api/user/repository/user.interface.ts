@@ -14,5 +14,11 @@ export interface IUpdateUserDetailsParams {
   last_name: string;
   description?: string | null;
   username: string;
-  user_id: string
+  user_id: string;
+}
+
+export interface IUpdateUserLocationParams {
+  country: string;
+  state: string;
+  user_id: string;
 }

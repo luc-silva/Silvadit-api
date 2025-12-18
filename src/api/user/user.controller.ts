@@ -44,6 +44,6 @@ export class UserController {
 
   @Put("location")
   async updateUserLocation(@Body() body: UpdateUserLocationDTO, @ExtractUser() user: ISession) {
-    //return await this.userService.updateUserDetails(body, user);
+    return await this.userService.updateUserLocation(body, user);
   }
 }

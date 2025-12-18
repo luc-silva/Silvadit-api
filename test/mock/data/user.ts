@@ -1,5 +1,11 @@
-import { IUpdateUserDetailsParams } from '~/api/user/repository/user.interface';
-import { UpdateUserDetailsDTO } from '~/api/user/types/user.dto';
+import {
+  IUpdateUserDetailsParams,
+  IUpdateUserLocationParams,
+} from '~/api/user/repository/user.interface';
+import {
+  UpdateUserDetailsDTO,
+  UpdateUserLocationDTO,
+} from '~/api/user/types/user.dto';
 
 export const createCompletedUserData = (
   data?: Partial<ICompleteUser>,
@@ -51,7 +57,28 @@ export const createtUserUpdateDetailsParams = (
     last_name: '123',
     username: 'Teste123',
     description: 'Lorem teste',
-    user_id: "ABC",
+    user_id: 'ABC',
+    ...data,
+  };
+};
+
+export const createUpdateUserLocationDTO = (
+  data?: Partial<UpdateUserLocationDTO>,
+): UpdateUserLocationDTO => {
+  return {
+    country: 'Brazil',
+    state: 'São Paulo',
+    ...data,
+  };
+};
+
+export const createUpdateUserLocationParams = (
+  data?: Partial<IUpdateUserLocationParams>,
+): IUpdateUserLocationParams => {
+  return {
+    country: 'Brazil',
+    state: 'São Paulo',
+    user_id: 'ABC',
     ...data,
   };
 };

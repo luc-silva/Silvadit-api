@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createSessionMock } from 'test/mock/data/auth';
 import {
+  createUpdateUserLocationParams,
   createCompletedUserData,
   createtUserUpdateDetailsParams,
+  createUpdateUserLocationDTO,
   createUserOutput,
   createUserUpdateDetailsDTO,
 } from 'test/mock/data/user';
@@ -75,6 +77,18 @@ describe('UserService', () => {
         const user = createCompletedUserData({ userId: 'ABC' });
 
         const result = UserMapper.toUpdateDetailsParams(dto, user);
+
+        expect(result).toEqual(expected);
+      });
+    });
+
+    describe('toUpdateUserLocation', () => {
+      it('Should mapper DTO correctly', () => {
+        const dto = createUpdateUserLocationDTO();
+        const user = createCompletedUserData({ userId: 'ABC' });
+        const expected = createUpdateUserLocationParams();
+
+        const result = UserMapper.toUpdateLocationParams(dto, user);
 
         expect(result).toEqual(expected);
       });
@@ -189,7 +203,7 @@ describe('UserService', () => {
   });
 
   describe('PUT - updateUserDetails', () => {
-    it('should throw error if user no found', async () => {
+    it('should throw error if user not found', async () => {
       const session = createSessionMock();
 
       userRepository.getUserByIdOrUsername.mockResolvedValue(null);
@@ -211,6 +225,34 @@ describe('UserService', () => {
 
       await userService.updateUserDetails(dto, session);
       await expect(userRepository.updateUserDetails).toHaveBeenCalledWith(
+        expectedParams,
+      );
+    });
+  });
+
+  describe('PUT - updateUserLocation', () => {
+    it('should throw error if user not found', async () => {
+      const session = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(null);
+
+      await expect(
+        userService.updateUserLocation(createUpdateUserLocationDTO(), session),
+      ).rejects.toThrow('User not found.');
+    });
+
+    it('should call repository correctly', async () => {
+      const session = createSessionMock();
+      const dto = createUpdateUserLocationDTO();
+
+      const expectedParams = createUpdateUserLocationParams({ user_id: 'ABC' });
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId: 'ABC' }),
+      );
+
+      await userService.updateUserLocation(dto, session);
+      await expect(userRepository.updateUserLocation).toHaveBeenCalledWith(
         expectedParams,
       );
     });
