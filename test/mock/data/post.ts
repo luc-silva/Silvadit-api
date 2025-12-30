@@ -14,11 +14,9 @@ export const createPostRaw = (data?: Partial<IPostRaw>): IPostRaw => {
     forum_id: 'FORUM123',
     forum_name: 'POST',
     forum_description: 'forumdescription',
-    forum_followers: 4,
 
     owner_id: 'USER123',
     owner_username: 'USERUSERNAME',
-    owner_followers: 5,
     ...data,
   };
 };
@@ -39,12 +37,10 @@ export const createPostOutput = (data?: Partial<IPostOutput>): IPostOutput => {
       id: 'FORUM123',
       name: 'POST',
       description: 'forumdescription',
-      followers: 4,
     },
     owner: {
       id: 'USER123',
       username: 'USERUSERNAME',
-      followers: 5,
     },
     ...data,
   };
@@ -93,6 +89,34 @@ export const createPostUpdateParams = (
     is_nsfw: 'N',
     post_id: '123',
     title: 'TITULO',
+    ...data,
+  };
+};
+
+export const createGetPostFilter = (
+  data?: Partial<IGetPostsFilter>,
+): IGetPostsFilter => {
+  return {
+    forum_id: 'ABC',
+    nsfw: 'N',
+    post_id: 'ABC123',
+    user_id: '2131',
+    itemPerPage: 10,
+    page: 1,
+    ...data,
+  };
+};
+
+export const createGetPostUnmappedFilter = (
+  data?: IGetPostUnmappedFilter,
+): IGetPostUnmappedFilter => {
+  return {
+    forumId: 'ABCFORUM',
+    isNsfw: false,
+    itemsPerPage: 10,
+    page: 1,
+    postId: 'ABCA',
+    user: null,
     ...data,
   };
 };

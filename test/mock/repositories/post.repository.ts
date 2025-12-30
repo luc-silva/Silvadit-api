@@ -11,7 +11,7 @@ export class MockPostRepository implements jest.Mocked<PostRepositoryBase> {
 
   getTrendingPosts = jest.fn<Promise<IPostRaw[]>, []>();
 
-  getPosts = jest.fn<Promise<IPostRaw[]>, [UserID]>();
+  getPosts = jest.fn<Promise<IPostRaw[]>, [IGetPostsParams]>();
 
   getPostsFromSuggested = jest.fn<Promise<IPostRaw[]>, []>();
 

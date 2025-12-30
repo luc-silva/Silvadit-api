@@ -21,3 +21,23 @@ interface ISubscribedForumOutput {
     isBanned: boolean;
   };
 }
+
+interface IForumMemberRaw {
+  first_name: string;
+  username: string;
+  country: string;
+  date_created: Date;
+  last_name: string;
+  state: string;
+  id: string;
+}
+
+interface IForumMemberOutput {
+  firstName: string;
+  username: string;
+  country: string;
+  dateCreated: Date;
+  lastName: string;
+  state: string;
+  id: string;
+}

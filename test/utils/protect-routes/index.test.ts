@@ -4,7 +4,7 @@ import {
   ExecutionHostMock,
   ReflectorMock,
 } from 'test/mock/utils/execution-context';
-import { ProtectRoutes } from '~/utils/decorators/protect-routes';
+import { ProtectRoutes } from '~/utils/decorators/protect-routes/PublicDecorator';
 
 describe('ProtectRoutes', () => {
   let executionHostMock: ExecutionHostMock;

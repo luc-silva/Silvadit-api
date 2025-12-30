@@ -3,6 +3,11 @@ interface ICreateForumParams {
   description: string;
   is_nsfw: IYesNo;
   is_private: IYesNo;
+  id: any;
+}
+
+interface ICreateForumReturn {
+  id: string;
 }
 
 interface IUpdateForumParams {
@@ -26,4 +31,13 @@ interface IUnfollowForumParams {
 interface IBanUserParams {
   user_id: UserID;
   forum_id: ForumID;
+}
+
+interface IForumDetailsParams {
+  forum_id: string;
+  user_id: string | null;
+}
+
+interface IGetForumStaffParams {
+  forum_id: string;
 }

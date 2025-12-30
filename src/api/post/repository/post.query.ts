@@ -14,22 +14,34 @@ export class PostQuery {
 
   public static deletePost() {
     return `
-      DELETE FROM POST
-      WHERE POST_ID = :post_id
+      DELETE FROM POSTS
+      WHERE RAWTOHEX(POST_ID) = :post_id
     `;
   }
 
-  public static getPosts() {
+  public static getPosts(filter: IGetPostsFilter) {
     return `
-      WITH FOLLOWED_FORUMS_ AS (
-        SELECT FF.FORUM_ID, FF.USER_ID
-        FROM FORUM F, FORUM_FOLLOWED FF
-        WHERE F.FORUM_ID = FF.FORUM_ID(+)
-      )
-      SELECT P.CONTENT
-      FROM POST P, FOLLOWED_FORUMS FF
-      WHERE P.FORUM_ID = FF.FORUM_ID(+)
-      AND FF.USER_ID = :user_id
+      SELECT 
+        P.CONTENT "post_content",
+        RAWTOHEX(P.POST_ID) "post_id",
+        P.TITLE "post_title",
+        P.IS_NSFW "post_is_nsfw",
+        P.DATE_CREATED "post_date_created",
+        P.DATE_EDITED "post_date_edited",
+        (
+          SELECT COUNT(*)
+          FROM REACTIONS
+          WHERE RAWTOHEX(POST_ID) = RAWTOHEX(P.USER_ID)
+        ) "post_likes",
+        UA.USERNAME "owner_username",
+        RAWTOHEX(UA.USER_ID) "owner_id"
+      FROM POSTS P, USER_ACCOUNTS UA
+      WHERE RAWTOHEX(P.USER_ID) = RAWTOHEX(UA.USER_ID)  
+      ${filter.forum_id ? 'AND RAWTOHEX(P.FORUM_ID) = :forum_id' : ''}
+      ${filter.user_id ? 'AND RAWTOHEX(P.USER_ID) = :user_id' : ''}
+      ${filter.post_id ? 'AND RAWTOHEX(P.POST_ID) = :post_id' : ''}
+      ${filter.nsfw ? `AND NVL(P.IS_NSFW, 'N') = :nsfw` : ''}
+      OFFSET (:items_per_page * (:page - 1)) ROWS FETCH NEXT :items_per_page ROWS ONLY
     `;
   }
 
@@ -98,9 +110,9 @@ export class PostQuery {
 
   public static deleteBookmark() {
     return `
-      DELETE FROM SAVED_POST
-      WHERE POST_ID = :post_id
-        AND USER_ID = :user_id
+      DELETE FROM SAVED_POSTS
+      WHERE RAWTOHEX(POST_ID) = :post_id
+        AND RAWTOHEX(USER_ID) = :user_id
     `;
   }
 
@@ -112,7 +124,7 @@ export class PostQuery {
         TITLE = :title,
         IS_NSFW =:is_nsfw
 
-      WHERE  POST_ID = :post_id
+      WHERE  RAWTOHEX(POST_ID) = :post_id
     `;
   }
 }

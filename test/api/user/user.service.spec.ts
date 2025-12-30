@@ -129,15 +129,16 @@ describe('UserService', () => {
     });
 
     it('should list user posts correctly', async () => {
-      const userId = 'ABCDEFG';
+      const userIdMock = 'ABCDEFG'
+      const postsFilterMock: IGetPostsFilter = {user_id: userIdMock};
 
       userRepository.getUserByIdOrUsername.mockResolvedValue(
-        createCompletedUserData({ userId }),
+        createCompletedUserData({ userId: userIdMock }),
       );
       postRepository.getPosts.mockResolvedValue([]);
 
-      await expect(userService.getUserPosts(userId)).resolves;
-      expect(postRepository.getPosts).toHaveBeenCalledWith(userId);
+      await expect(userService.getUserPosts(userIdMock)).resolves;
+      expect(postRepository.getPosts).toHaveBeenCalledWith(postsFilterMock);
     });
   });
 

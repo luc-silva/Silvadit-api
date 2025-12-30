@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostCommentaryDTO } from '../commentary/types/commentary.dto';
-import { ReactPostDTO, UpdatePostDTO } from './types/post.dto';
+import { CreatePostDTO, ReactPostDTO, UpdatePostDTO } from './types/post.dto';
 import { ExtractUser } from '~/utils/decorators/extract-user';
-import { Public } from '~/utils/decorators/protect-routes';
+import { Public } from '~/utils/decorators/protect-routes/PublicDecorator';
 
 @Controller('post')
 export class PostController {
@@ -50,6 +50,14 @@ export class PostController {
     @ExtractUser() session: ISession,
   ) {
     return await this.postService.createPostCommentary(body, session);
+  }
+
+  @Post()
+  async createPost(
+    @Body() body: CreatePostDTO,
+    @ExtractUser() session: ISession,
+  ) {
+    return await this.postService.createPost(body, session);
   }
 
   @Get(':id/commentaries')
