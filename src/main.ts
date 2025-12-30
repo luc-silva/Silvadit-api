@@ -1,7 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './api/app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { ProtectRoutes } from './utils/decorators/protect-routes';
+import { ProtectRoutes } from './utils/decorators/protect-routes/PublicDecorator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

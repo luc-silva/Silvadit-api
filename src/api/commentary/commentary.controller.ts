@@ -12,7 +12,7 @@ import {
   ReactCommentaryDataDTO,
   UpdateCommentaryDataDTO,
 } from './types/commentary.dto';
-import { Public } from '~/utils/decorators/protect-routes';
+import { Public } from '~/utils/decorators/protect-routes/PublicDecorator';
 import { ExtractUser } from '~/utils/decorators/extract-user';
 
 @Controller('commentary')

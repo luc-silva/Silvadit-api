@@ -12,13 +12,29 @@ export class ForumRepository implements ForumRepositoryBase {
     const connection = await getConnection();
 
     const query = ForumQuery.createForum();
-    await connection.execute(query, data, {});
+    const { outBinds } = await connection.execute<ICreateForumReturn>(
+      query,
+      data,
+      {},
+    );
+    return { id: outBinds!.id[0] };
   }
 
-  async getForumDetails(forum_id: ForumID) {
+  async getForumDetails(params: IForumDetailsParams) {
     const connection = await getConnection();
 
     const query = ForumQuery.getForumDetails();
+
+    const { rows } = await connection.execute<IForumRaw>(query, params, {
+      outFormat: OUT_FORMAT_OBJECT,
+    });
+    return rows && rows.length ? rows[0] : null;
+  }
+
+  async getForumById(forum_id: ForumID) {
+    const connection = await getConnection();
+
+    const query = ForumQuery.getForumById();
     const { rows } = await connection.execute<IForumRaw>(
       query,
       { forum_id },

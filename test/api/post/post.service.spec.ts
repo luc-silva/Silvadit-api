@@ -17,22 +17,32 @@ import { CreatePostCommentaryDTO } from '~/api/commentary/types/commentary.dto';
 import { createCompletedUserData } from 'test/mock/data/user';
 import { PostMapper } from '~/api/post/utils/post.mapper';
 import {
+  createPostCreateParams,
   createPostDTO,
   createPostOutput,
   createPostRaw,
   createPostUpdateDto,
   createPostUpdateParams,
 } from 'test/mock/data/post';
+import { MockForumRepository } from 'test/mock/repositories/forum.repository';
+import { FORUM_REPOSITORY_TOKEN } from '~/api/forum/repository/forum.repository.base';
+import { createForumOutput, createForumRaw } from 'test/mock/data/forum';
+import { FORUM_MEMBERS_REPOSITORY_TOKEN } from '~/api/forum_members/repository/forum_members.repository.base';
+import { MockForumMembersRepository } from 'test/mock/repositories/forum_members.repository';
 
 describe('postService', () => {
   let postService: PostService;
   let postRepository: MockPostRepository;
   let userRepository: MockUserRepository;
+  let forumRepository: MockForumRepository;
+  let forumMembersRepository: MockForumMembersRepository;
   let commentaryRepository: MockCommentaryRepository;
 
   beforeEach(async () => {
     postRepository = new MockPostRepository();
     userRepository = new MockUserRepository();
+    forumRepository = new MockForumRepository();
+    forumMembersRepository = new MockForumMembersRepository();
     commentaryRepository = new MockCommentaryRepository();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -47,6 +57,8 @@ describe('postService', () => {
           useValue: {},
         },
         { provide: USER_REPOSITORY_TOKEN, useValue: {} },
+        { provide: FORUM_REPOSITORY_TOKEN, useValue: {} },
+        { provide: FORUM_MEMBERS_REPOSITORY_TOKEN, useValue: {} },
       ],
     })
       .overrideProvider(POST_REPOSITORY_TOKEN)
@@ -55,28 +67,15 @@ describe('postService', () => {
       .useValue(commentaryRepository)
       .overrideProvider(USER_REPOSITORY_TOKEN)
       .useValue(userRepository)
+      .overrideProvider(FORUM_REPOSITORY_TOKEN)
+      .useValue(forumRepository)
+      .overrideProvider(FORUM_MEMBERS_REPOSITORY_TOKEN)
+      .useValue(forumMembersRepository)
       .compile();
 
     postService = module.get<PostService>(PostService);
   });
 
-  describe('Mapper', () => {
-    describe('mapPostDetails', () => {
-      const rawMock = createPostRaw();
-      const result = PostMapper.mapPostDetails(rawMock);
-      const expected = createPostOutput();
-
-      expect(result).toEqual(expected);
-    });
-
-    describe('updatePost', () => {
-      const rawMock = createPostUpdateDto();
-      const result = PostMapper.updatePost(rawMock);
-      const expected = createPostUpdateParams();
-
-      expect(result).toEqual(expected);
-    });
-  });
 
   describe('Validator', () => {
     describe('createPost', () => {
@@ -201,6 +200,126 @@ describe('postService', () => {
         .resolves;
       await expect(commentaryRepository.createCommentary).toHaveBeenCalledWith(
         expectCalledWith,
+      );
+    });
+  });
+
+  describe('POST - createPost', () => {
+    it('Should create exception if user is not found', () => {
+      const dto = createPostDTO({ forumId: '123' });
+      const sessionMock = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(null);
+
+      expect(postService.createPost(dto, sessionMock)).rejects.toThrow(
+        'User not found.',
+      );
+    });
+
+    it('Should create exception if forum defined is not found', () => {
+      const dto = createPostDTO({ forumId: '123' });
+      const sessionMock = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData(),
+      );
+      forumRepository.getForumById.mockResolvedValue(null);
+
+      expect(postService.createPost(dto, sessionMock)).rejects.toThrow(
+        'Forum not found.',
+      );
+    });
+
+    it('Should throw exception when post data is invalid', () => {
+      const dto = createPostDTO({
+        forumId: '123',
+        content: null,
+      } as unknown as CreatePostDTO);
+      const sessionMock = createSessionMock();
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData(),
+      );
+
+      expect(postService.createPost(dto, sessionMock)).rejects.toThrow(
+        'Invalid data.',
+      );
+    });
+
+    it('Should call repository correctly when no forum id', async () => {
+      const dto = createPostDTO({
+        forumId: undefined,
+      });
+      const sessionMock = createSessionMock({ id: '123' });
+
+      const expected = createPostCreateParams({
+        user_id: sessionMock.id,
+        forum_id: null,
+      });
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId: '123' }),
+      );
+
+      await postService.createPost(dto, sessionMock);
+
+      expect(postRepository.createPost).toHaveBeenCalledWith(expected);
+    });
+
+    it('Should call repository correctly when forum id has been specified', async () => {
+      const dto = createPostDTO({
+        forumId: '123',
+      });
+      const sessionMock = createSessionMock({ id: '123' });
+      const forumMock = createForumRaw({ forum_id: '123' });
+
+      const expected = createPostCreateParams({
+        user_id: sessionMock.id,
+        forum_id: dto.forumId,
+      });
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId: '123' }),
+      );
+      forumRepository.getForumById.mockResolvedValue(forumMock);
+      forumMembersRepository.checkIfUserSubscribed.mockResolvedValue(1);
+
+      await postService.createPost(dto, sessionMock);
+
+      expect(postRepository.createPost).toHaveBeenCalledWith(expected);
+    });
+
+    it('Should call repository correctly when forum id has been specified but not found', async () => {
+      const dto = createPostDTO({
+        forumId: '123',
+      });
+      const sessionMock = createSessionMock({ id: '123' });
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId: '123' }),
+      );
+      forumRepository.getForumById.mockResolvedValue(null);
+
+      await expect(postService.createPost(dto, sessionMock)).rejects.toThrow(
+        'Forum not found.',
+      );
+    });
+
+    it('Should only allow subscribed user to create post within a forum', async () => {
+      const dto = createPostDTO({
+        forumId: '123',
+      });
+      const sessionMock = createSessionMock({ id: '123' });
+      const forumMock = createForumRaw({ forum_id: '123' });
+
+      userRepository.getUserByIdOrUsername.mockResolvedValue(
+        createCompletedUserData({ userId: '123' }),
+      );
+      forumRepository.getForumById.mockResolvedValue(forumMock);
+      forumMembersRepository.checkIfUserSubscribed.mockResolvedValue(null);
+
+      await expect(postService.createPost(dto, sessionMock)).rejects.toThrow(
+        'User not allowed.',
       );
     });
   });

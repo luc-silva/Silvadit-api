@@ -16,14 +16,26 @@ import { HomepageMapper } from '../home/utils/home.mapper';
 import { CommentaryMapper } from '../commentary/utils/commentary.mapper';
 import { PostMapper } from './utils/post.mapper';
 import { NotFoundError } from 'rxjs';
+import {
+  FORUM_REPOSITORY_TOKEN,
+  ForumRepositoryBase,
+} from '../forum/repository/forum.repository.base';
+import {
+  FORUM_MEMBERS_REPOSITORY_TOKEN,
+  ForumMembersRepositoryBase,
+} from '../forum_members/repository/forum_members.repository.base';
 
 @Injectable()
 export class PostService {
   constructor(
     @Inject(POST_REPOSITORY_TOKEN) private postRepository: PostRepositoryBase,
-    @Inject(USER_REPOSITORY_TOKEN) private userRepository: UserRepositoryBase,
     @Inject(COMMENTARY_REPOSITORY_TOKEN)
     private commentaryRepository: CommentaryRepositoryBase,
+    @Inject(USER_REPOSITORY_TOKEN) private userRepository: UserRepositoryBase,
+    @Inject(FORUM_REPOSITORY_TOKEN)
+    private forumRepository: ForumRepositoryBase,
+    @Inject(FORUM_MEMBERS_REPOSITORY_TOKEN)
+    private forumMembersRepository: ForumMembersRepositoryBase,
   ) {}
 
   async createPost(body: CreatePostDTO, session: ISession) {
@@ -33,6 +45,24 @@ export class PostService {
     }
 
     PostValidator.createPost(body);
+
+    if (body.forumId) {
+      const forum = await this.forumRepository.getForumById(
+        body.forumId as ForumID,
+      );
+      if (!forum) {
+        throw new Error('Forum not found.');
+      }
+
+      const subscribed =
+        await this.forumMembersRepository.checkIfUserSubscribed(
+          user.userId as UserID,
+          forum.forum_id as ForumID,
+        );
+      if (!subscribed) {
+        throw new Error('User not allowed.');
+      }
+    }
 
     const parsedData: ICreatePostParams = HomepageMapper.createPost(body, user);
     return await this.postRepository.createPost(parsedData);

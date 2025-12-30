@@ -49,14 +49,13 @@ export class PostRepository implements PostRepositoryBase {
     return rows && rows.length ? rows[0] : null;
   }
 
-  async getPosts(userId: UserID): Promise<IPostRaw[]> {
+  async getPosts(filter: IGetPostsFilter): Promise<IPostRaw[]> {
     const connection = await getConnection();
 
-    const query = PostQuery.getPosts();
+    const query = PostQuery.getPosts(filter);
 
-    const { rows } = await connection.execute<IPostRaw>(query, {
-      user_id: userId,
-    });
+
+    const { rows } = await connection.execute<IPostRaw>(query, filter);
     return rows && rows.length ? rows : [];
   }
 

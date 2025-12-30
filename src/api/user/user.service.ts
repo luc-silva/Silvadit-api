@@ -49,7 +49,7 @@ export class UserService {
       throw new Error('User not found.');
     }
 
-    const params = UserMapper.toUpdateDetailsParams(body, foundUser)
+    const params = UserMapper.toUpdateDetailsParams(body, foundUser);
 
     return await this.userRepository.updateUserDetails(params);
   }
@@ -62,7 +62,7 @@ export class UserService {
       throw new Error('User not found.');
     }
 
-    const params = UserMapper.toUpdateLocationParams(body, foundUser)
+    const params = UserMapper.toUpdateLocationParams(body, foundUser);
 
     return await this.userRepository.updateUserLocation(params);
   }
@@ -77,7 +77,9 @@ export class UserService {
       throw new Error('User not found.');
     }
 
-    const posts = await this.postRepository.getPosts(user.userId as UserID);
+    const filter: IGetPostsFilter = { user_id: user.userId };
+
+    const posts = await this.postRepository.getPosts(filter);
 
     return posts.map<IPostOutput>(PostMapper.mapPostDetails);
   }

@@ -1,5 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { BanUserDTO, CreateForumDataDTO } from './types/forum.dto';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BanUserDTO,
+  CreateForumDataDTO,
+  GetForumMemberFilterDTO,
+} from './types/forum.dto';
 import {
   FORUM_REPOSITORY_TOKEN,
   ForumRepositoryBase,
@@ -8,13 +12,18 @@ import { ForumMapper } from './utils/forum.mapper';
 import { ForumValidator } from './utils/forum.validator';
 import { USER_REPOSITORY_TOKEN } from '../user/repository/user.repository.token';
 import { UserRepositoryBase } from '../user/repository/user.repository.base';
-import { CreatePostDTO } from '../post/types/post.dto';
+import {
+  FORUM_MEMBERS_REPOSITORY_TOKEN,
+  ForumMembersRepositoryBase,
+} from '../forum_members/repository/forum_members.repository.base';
 import {
   POST_REPOSITORY_TOKEN,
   PostRepositoryBase,
 } from '../post/repository/post.repository.base';
-import { PostValidator } from '../post/utils/post.validator';
-import { HomepageMapper } from '../home/utils/home.mapper';
+import { PostMapper } from '../post/utils/post.mapper';
+import { ForumMembersMapper } from '../forum_members/utils/forum_members.mapper';
+import { ForumAssembler } from './utils/forum.assembler';
+import { ForumMembersOrder } from '../forum_members/utils/forum_members.order';
 
 @Injectable()
 export class ForumService {
@@ -23,6 +32,8 @@ export class ForumService {
     private forumRepository: ForumRepositoryBase,
     @Inject(USER_REPOSITORY_TOKEN)
     private userRepository: UserRepositoryBase,
+    @Inject(FORUM_MEMBERS_REPOSITORY_TOKEN)
+    private forumMembersRepository: ForumMembersRepositoryBase,
     @Inject(POST_REPOSITORY_TOKEN)
     private postRepository: PostRepositoryBase,
   ) {}
@@ -35,25 +46,83 @@ export class ForumService {
       throw new Error('User not found.');
     }
 
-    const data = ForumMapper.createForum(body);
+    const forum = ForumMapper.createForum(body);
 
-    return await this.forumRepository.createForum(data);
+    const { id } = await this.forumRepository.createForum(forum);
+
+    const data = ForumMembersMapper.toSubscribeParams(
+      user.userId,
+      id,
+      true,
+      true,
+    );
+    return await this.forumMembersRepository.subscribeUser(data);
   }
 
   async getTrendingForums() {
     return await this.forumRepository.getTrendingForums();
   }
 
-  async getForumDetails(id: string) {
-    return await this.forumRepository.getForumDetails(id as ForumID);
+  async getForumDetails(id: string, session: ISession | null) {
+    let user: ICompleteUser | null = null;
+
+    if (session) {
+      user = await this.userRepository.getUserByIdOrUsername(session.id);
+    }
+
+    const data: IForumDetailsParams = ForumMapper.toForumDetailsParams(
+      user,
+      id,
+    );
+
+    const forum = await this.forumRepository.getForumDetails(data);
+    if (!forum) {
+      throw new Error('Forum not found.');
+    }
+
+    const forumStaff = await this.forumMembersRepository.getForumStaff({
+      forum_id: forum.forum_id,
+    });
+
+
+    return ForumAssembler.toForum(forum, forumStaff);
   }
 
-  async subscribeForum() {
-    // check if user already subscribed
-    // if not
-    //return await this.forumRepository.followForum(body);
-    // else
-    //return await this.forumRepository.unfollowForum(body);
+  async subscribeForum(id: string, session: ISession) {
+    const user = await this.userRepository.getUserByIdOrUsername(session.id);
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    const forum = await this.forumRepository.getForumById(id as ForumID);
+    if (!forum) {
+      throw new Error('Forum not found.');
+    }
+
+    const isSubscribed =
+      await this.forumMembersRepository.checkIfUserSubscribed(
+        user.userId as UserID,
+        id as ForumID,
+      );
+    if (!isSubscribed) {
+      const data: ISubscribeUserParams = ForumMembersMapper.toSubscribeParams(
+        user.userId,
+        id,
+        false,
+        false,
+      );
+
+      return await this.forumMembersRepository.subscribeUser(data);
+    }
+
+    if (isSubscribed) {
+      const data: IUnsubscribeUserParams =
+        ForumMembersMapper.toUnsubscribeParams(user.userId, id);
+
+      return await this.forumMembersRepository.unsubscribeUser(data);
+    }
+
+    return 'Ok';
   }
 
   async banUserFromForum(body: BanUserDTO) {
@@ -64,14 +133,67 @@ export class ForumService {
     return await this.forumRepository.banUserFromForum(data);
   }
 
-  async createPost(post: CreatePostDTO, session: ISession) {
-    const user = await this.userRepository.getUserByIdOrUsername(session.id);
-    if (!user) {
-      throw new Error('User not found.');
+  async getPostsFromForum(id: string, session: ISession | null) {
+    const forum = await this.forumRepository.getForumById(id as ForumID);
+    if (!forum) {
+      throw new Error('Forum not found.');
     }
 
-    PostValidator.createPost(post);
-    const mappedPost = HomepageMapper.createPost(post, user);
-    return await this.postRepository.createPost(mappedPost);
+    const { user } = await this.validatePrivacy(forum, session);
+
+    const mappedFilter = PostMapper.toGetPosts({
+      forumId: id,
+      isNsfw: 'N',
+      user,
+    });
+    const posts = await this.postRepository.getPosts(mappedFilter);
+
+    return posts.map(PostMapper.mapPostDetails);
+  }
+
+  async getForumMembers(
+    body: GetForumMemberFilterDTO,
+    session: ISession | null,
+  ) {
+    const forum = await this.forumRepository.getForumById(
+      body.forumId as ForumID,
+    );
+    if (!forum) {
+      throw new Error('Forum not found.');
+    }
+
+    await this.validatePrivacy(forum, session);
+
+    const params = ForumMembersMapper.toGetForumMembersParams(body);
+    const order = ForumMembersOrder.toMembersFiltersOrder(body)
+
+    const members = await this.forumMembersRepository.getForumMembers(params, order);
+
+    return members.map(ForumMembersMapper.toForumMembersOutput);
+  }
+
+  private async validatePrivacy(forum: IForumRaw, session: ISession | null) {
+    let user: ICompleteUser | null = null;
+    if (forum.is_private === 'S') {
+      if (!session) {
+        throw new Error('User not allowed without following the forum.');
+      }
+
+      user = await this.userRepository.getUserByIdOrUsername(session.id);
+      if (!user) {
+        throw new Error('User not found.');
+      }
+
+      const userFollowing =
+        await this.forumMembersRepository.checkIfUserSubscribed(
+          user.userId as UserID,
+          forum.forum_id as ForumID,
+        );
+      if (!userFollowing) {
+        throw new Error('User not allowed.');
+      }
+    }
+
+    return { user };
   }
 }

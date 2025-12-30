@@ -1,9 +1,11 @@
 import { ForumRepositoryBase } from '~/api/forum/repository/forum.repository.base';
 
 export class MockForumRepository implements jest.Mocked<ForumRepositoryBase> {
-  createForum = jest.fn<Promise<void>, [ICreateForumParams]>();
+  createForum = jest.fn<Promise<ICreateForumReturn>, [ICreateForumParams]>();
 
-  getForumDetails = jest.fn<Promise<IForumRaw | null>, [ForumID]>();
+  getForumDetails = jest.fn<Promise<IForumRaw | null>, [IForumDetailsParams]>();
+
+  getForumById = jest.fn<Promise<IForumRaw | null>, [ForumID]>();
 
   updateForum = jest.fn<Promise<void>, [IUpdateForumParams]>();
 
@@ -15,5 +17,5 @@ export class MockForumRepository implements jest.Mocked<ForumRepositoryBase> {
 
   banUserFromForum = jest.fn<Promise<void>, [IBanUserParams]>();
 
-  getForumsFromUser = jest.fn<Promise<ISubscribedForum[]>, [UserID]>();
+  getForumsFromUser = jest.fn<Promise<ISubscribedForumRaw[]>, [UserID]>();
 }

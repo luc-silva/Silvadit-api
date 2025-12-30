@@ -1,12 +1,15 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ForumService } from './forum.service';
 import {
   BanUserDTO,
   CreateForumDataDTO,
-  FollowForumDataDTO,
+  GetForumMemberFilterDTO,
 } from './types/forum.dto';
-import { ExtractUser } from '~/utils/decorators/extract-user';
-import { Public } from '~/utils/decorators/protect-routes';
+import { ExtractSession } from '~/utils/decorators/extract-user';
+import {
+  OptionalAuth,
+  Public,
+} from '~/utils/decorators/protect-routes/PublicDecorator';
 
 @Controller('forum')
 export class ForumController {
@@ -18,14 +21,21 @@ export class ForumController {
   }
 
   @Get(':id')
-  @Public()
-  async getForumDetails(@Param('id') id: string) {
-    return await this.forumService.getForumDetails(id);
+  @OptionalAuth()
+  async getForumDetails(
+    @Param('id') id: string,
+    @ExtractSession() session: ISession | null,
+  ) {
+    return await this.forumService.getForumDetails(id, session);
   }
 
-  @Post('follow')
-  async followForum(@Body() body: FollowForumDataDTO) {
-    return await this.forumService.subscribeForum();
+  @Get(':id/posts')
+  @OptionalAuth()
+  async getForumPosts(
+    @Param('id') id: string,
+    @ExtractSession() session: ISession | null,
+  ) {
+    return await this.forumService.getPostsFromForum(id, session);
   }
 
   @Post('ban-user')
@@ -36,8 +46,37 @@ export class ForumController {
   @Post()
   async createForum(
     @Body() body: CreateForumDataDTO,
-    @ExtractUser() user: ISession,
+    @ExtractSession() session: ISession,
   ) {
-    return await this.forumService.createForum(body, user);
+    return await this.forumService.createForum(body, session);
+  }
+
+  @Post()
+  async createPost(
+    @Body() body: CreateForumDataDTO,
+    @ExtractSession() session: ISession,
+  ) {
+    return await this.forumService.createForum(body, session);
+  }
+
+  @Post(':id/subscribe')
+  async subscribeForum(
+    @Param('id') id: string,
+    @ExtractSession() session: ISession,
+  ) {
+    return await this.forumService.subscribeForum(id, session);
+  }
+
+  @Get(':id/members')
+  @OptionalAuth()
+  async getForumMembers(
+    @Query() params: GetForumMemberFilterDTO,
+    @Param('id') forumId: string,
+    @ExtractSession() session: ISession,
+  ) {
+    return await this.forumService.getForumMembers(
+      { ...params, forumId },
+      session,
+    );
   }
 }

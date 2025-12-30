@@ -15,11 +15,9 @@ interface IPostRaw {
   post_likes: number;
   owner_id: string;
   owner_username: string;
-  owner_followers: number;
   forum_id: string | null;
   forum_name: string | null;
   forum_description: string | null;
-  forum_followers: number;
 }
 
 interface IPostOutput {
@@ -28,7 +26,6 @@ interface IPostOutput {
     username: string;
     avatar?: string;
     banner?: string;
-    followers: number;
   };
   forum: {
     name: string;
@@ -36,7 +33,6 @@ interface IPostOutput {
     description: string;
     avatar?: string;
     banner?: string;
-    followers: number;
   } | null;
   post: {
     id: string;

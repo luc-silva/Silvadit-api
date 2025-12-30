@@ -1,9 +1,11 @@
 export const FORUM_REPOSITORY_TOKEN = 'FORUM_REPOSITORY_TOKEN';
 
 export interface ForumRepositoryBase {
-  createForum(data: ICreateForumParams): Promise<void>;
+  createForum(data: ICreateForumParams): Promise<ICreateForumReturn>;
 
-  getForumDetails(forum_id: ForumID): Promise<IForumRaw | null>;
+  getForumDetails(params: IForumDetailsParams): Promise<IForumRaw | null>;
+
+  getForumById(forum_id: ForumID): Promise<IForumRaw | null>;
 
   updateForum(data: IUpdateForumParams): Promise<void>;
 
@@ -14,5 +16,4 @@ export interface ForumRepositoryBase {
   unfollowForum(data: IUnfollowForumParams): Promise<void>;
 
   banUserFromForum(data: IBanUserParams): Promise<void>;
-
 }

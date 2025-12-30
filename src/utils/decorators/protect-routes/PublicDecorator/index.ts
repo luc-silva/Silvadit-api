@@ -14,21 +14,29 @@ export class ProtectRoutes implements CanActivate {
 
   canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.get(Public, context.getHandler());
-    
-    if (!isPublic) {
-      const request = context.switchToHttp().getRequest<Request>();
-      const auth = request.headers.authorization;
+    const isOptional = this.reflector.get(OptionalAuth, context.getHandler());
 
-      if (!auth) {
-        throw new UnauthorizedException();
-      }
 
-      request.user = auth;
+    if (isPublic) {
       return true;
     }
 
+    const request = context.switchToHttp().getRequest<Request>();
+    const auth = request.headers.authorization;
+
+    if (isOptional) {
+      request.user = auth ?? null;
+      return true;
+    }
+
+    if (!auth) {
+      throw new UnauthorizedException();
+    }
+
+    request.user = auth;
     return true;
   }
 }
 
 export const Public = Reflector.createDecorator();
+export const OptionalAuth = Reflector.createDecorator();

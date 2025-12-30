@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Public } from '~/utils/decorators/protect-routes';
+import { Public } from '~/utils/decorators/protect-routes/PublicDecorator';
 import { ExtractUser } from '~/utils/decorators/extract-user';
 import { UpdateUserDetailsDTO, UpdateUserLocationDTO } from './types/user.dto';
 

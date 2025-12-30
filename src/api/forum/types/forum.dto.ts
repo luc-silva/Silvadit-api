@@ -1,4 +1,13 @@
-import { IsArray, IsBoolean, IsEnum, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsBooleanString,
+  IsEnum,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateForumDataDTO {
   @IsString()
@@ -25,23 +34,6 @@ export class UpdateForumDataDTO {
   description: string;
 }
 
-export class FollowForumDataDTO {
-  @IsString()
-  forum_id: string;
-
-  @IsString()
-  user_id: string;
-
-  @IsEnum({ enum: ['S', 'N'] })
-  is_admin: 'S' | 'N';
-
-  @IsEnum({ enum: ['S', 'N'] })
-  is_founder: 'S' | 'N';
-
-  @IsString()
-  date_created: Date;
-}
-
 export class UnfollowForumDataDTO {
   @IsString()
   forum_id: string;
@@ -56,4 +48,31 @@ export class BanUserDTO {
 
   @IsString()
   forum_id: string;
+}
+
+export class GetForumMemberFilterDTO {
+  @IsString()
+  @IsOptional()
+  forumId: string;
+
+  @IsOptional()
+  @IsEnum(['Y', 'N'])
+  isAdmin?: IYesNo;
+
+  @IsString()
+  @IsOptional()
+  search?: string;
+
+  @IsNumberString()
+  page: string;
+
+  @IsNumberString()
+  itemsPerPage: string;
+
+  @IsOptional()
+  orderField?: string;
+
+  @IsEnum(['asc', 'desc'])
+  @IsOptional()
+  orderDirection?: 'asc' | 'desc';
 }

@@ -165,6 +165,7 @@ export class UserQuery {
     `;
   }
 
+  //ver onde deixar essa query
   public static getUserFeed() {
     return `
       WITH USER_FRIENDS AS (

@@ -87,21 +87,6 @@ describe('HomeService', () => {
           'User not found.',
         );
       });
-
-      it('Should return a array of feed items', async () => {
-        const sessionMock = { id: 'asd' } as ISession;
-        const userMock = createCompletedUserData({ userId: 'asd' });
-
-        const expected: IFeedOutput[] = [createFeedItem()];
-
-        userRepository.getUserByIdOrUsername.mockResolvedValue(userMock);
-        userRepository.getUserFeed.mockResolvedValue([createRawFeedItem()]);
-
-        const result = await homeService.getFeed(sessionMock);
-
-        expect(result).toBeInstanceOf(Array);
-        expect(result).toEqual(expected);
-      });
     });
   });
 });

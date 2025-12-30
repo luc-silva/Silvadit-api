@@ -13,6 +13,8 @@ export class ForumQuery {
         :is_private,
         :is_nsfw
       )
+      RETURNING RAWTOHEX(FORUM_ID)
+      INTO :id
     `;
   }
 
@@ -21,11 +23,50 @@ export class ForumQuery {
       SELECT 
         F.NAME "name",
         F.DESCRIPTION "description",
-        F.IS_PRIVATE "isPrivate",
+        F.IS_PRIVATE "is_private",
         F.BANNED "banned",
-        F.IS_NSFW "isNsfw",
-        F.DATE_CREATED "dateCreated",
-        F.DATE_EDITED "dateEdited",
+        F.IS_NSFW "is_nsfw",
+        F.DATE_CREATED "date_created",
+        F.DATE_EDITED "date_edited",
+        RAWTOHEX(F.FORUM_ID) "forum_id",
+        (
+          SELECT
+            (
+              CASE WHEN COUNT(*) > 0
+                THEN 'S'
+                ELSE 'N'
+              END
+            )
+          FROM FORUM_MEMBERS FM2
+          WHERE RAWTOHEX(FM2.FORUM_ID) = :forum_id
+            AND RAWTOHEX(FM2.USER_ID) = :user_id
+        ) "is_following",
+        (
+          SELECT COUNT(*)
+          FROM FORUM_MEMBERS
+          WHERE RAWTOHEX(FORUM_ID) = :forum_id
+        ) "followers_total",
+        (
+          SELECT COUNT(*)
+          FROM POSTS
+          WHERE RAWTOHEX(FORUM_ID) = :forum_id
+        ) "posts_total"
+      FROM FORUMS F
+      WHERE RAWTOHEX(FORUM_ID) = :forum_id
+    `;
+  }
+
+  public static getForumById() {
+    return `
+      SELECT 
+        F.NAME "name",
+        F.DESCRIPTION "description",
+        F.IS_PRIVATE "is_private",
+        F.BANNED "banned",
+        F.IS_NSFW "is_nsfw",
+        F.DATE_CREATED "date_created",
+        F.DATE_EDITED "date_edited",
+        RAWTOHEX(F.FORUM_ID) "forum_id",
         (
           SELECT COUNT(*)
           FROM FORUM_MEMBERS
@@ -35,9 +76,10 @@ export class ForumQuery {
           SELECT COUNT(*)
           FROM POSTS
           WHERE FORUM_ID = :forum_id
-        ) "posts_total"        
+        ) "posts_total"
       FROM FORUMS F
       WHERE RAWTOHEX(FORUM_ID) = :forum_id
+
     `;
   }
 
