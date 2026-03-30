@@ -10,6 +10,7 @@ import {
   OptionalAuth,
   Public,
 } from '~/utils/decorators/protect-routes/PublicDecorator';
+import { GetPostsDTO } from '../post/types/post.dto';
 
 @Controller('forum')
 export class ForumController {
@@ -32,10 +33,14 @@ export class ForumController {
   @Get(':id/posts')
   @OptionalAuth()
   async getForumPosts(
-    @Param('id') id: string,
+    @Param('id') forumId: string,
     @ExtractSession() session: ISession | null,
+    @Query() params: GetPostsDTO,
   ) {
-    return await this.forumService.getPostsFromForum(id, session);
+    return await this.forumService.getPostsFromForum(
+      { forumId, ...params },
+      session,
+    );
   }
 
   @Post('ban-user')

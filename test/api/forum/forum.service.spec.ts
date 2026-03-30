@@ -24,6 +24,7 @@ import { MockForumMembersRepository } from 'test/mock/repositories/forum_members
 import { createCompletedUserData } from 'test/mock/data/user';
 import { POST_REPOSITORY_TOKEN } from '~/api/post/repository/post.repository.base';
 import { MockPostRepository } from 'test/mock/repositories/post.repository';
+import { createGetPostDTO } from 'test/mock/data/post';
 
 describe('forumService', () => {
   let forumService: ForumService;
@@ -258,30 +259,39 @@ describe('forumService', () => {
 
   describe('GET - getPostsFromForum', () => {
     it('Should throw exception if forum not found.', async () => {
-      const forumIdMock = 'ABC';
+      const dtoMock = createGetPostDTO({
+        forumId: 'ABC',
+        isNsfw: 'N',
+      });
       const session = createSessionMock();
 
       forumRepositoryMock.getForumById.mockResolvedValue(null);
 
       await expect(
-        forumService.getPostsFromForum(forumIdMock, session),
+        forumService.getPostsFromForum(dtoMock, session),
       ).rejects.toThrow('Forum not found.');
     });
 
     it('Should throw exception if forum private and user not authed.', async () => {
-      const forumIdMock = 'ABC';
+      const dtoMock = createGetPostDTO({
+        forumId: 'ABC',
+        isNsfw: 'N',
+      });
       const forumMock = createForumRaw({ is_private: 'S' });
 
       userRepository.getUserByIdOrUsername.mockResolvedValue(null);
       forumRepositoryMock.getForumById.mockResolvedValue(forumMock);
 
       await expect(
-        forumService.getPostsFromForum(forumIdMock, null),
+        forumService.getPostsFromForum(dtoMock, null),
       ).rejects.toThrow('User not allowed without following the forum.');
     });
 
     it('Should throw exception if forum private and user not found.', async () => {
-      const forumIdMock = 'ABC';
+      const dtoMock = createGetPostDTO({
+        forumId: 'ABC',
+        isNsfw: 'N',
+      });
       const session = createSessionMock();
       const forumMock = createForumRaw({ is_private: 'S' });
 
@@ -289,12 +299,15 @@ describe('forumService', () => {
       forumRepositoryMock.getForumById.mockResolvedValue(forumMock);
 
       await expect(
-        forumService.getPostsFromForum(forumIdMock, session),
+        forumService.getPostsFromForum(dtoMock, session),
       ).rejects.toThrow('User not found.');
     });
 
     it('Should not get posts from a private forum which user doesnt have access', async () => {
-      const forumIdMock = 'ABC';
+      const dtoMock = createGetPostDTO({
+        forumId: 'ABC',
+        isNsfw: 'N',
+      });
       const session = createSessionMock();
 
       const forumMock = createForumRaw({ is_private: 'S' });
@@ -305,21 +318,24 @@ describe('forumService', () => {
       forumMembersRepositoryMock.checkIfUserSubscribed.mockResolvedValue(null);
 
       await expect(
-        forumService.getPostsFromForum(forumIdMock, session),
+        forumService.getPostsFromForum(dtoMock, session),
       ).rejects.toThrow('User not allowed.');
     });
 
     it('Should call post repository correctly', async () => {
-      const forumIdMock = 'ABC';
+      const dtoMock = createGetPostDTO({
+        forumId: 'ABC',
+        isNsfw: 'N',
+        itemsPerPage: '10',
+      });
       const session = createSessionMock();
 
       const forumMock = createForumRaw({ is_private: 'S' });
       const userMock = createCompletedUserData();
 
-      const expected: IGetPostsFilter = {
-        forum_id: forumIdMock,
+      const expected: IGetPostsParams = {
+        forum_id: 'ABC',
         nsfw: 'N',
-        user_id: userMock.userId,
         items_per_page: 10,
         page: 1,
       };
@@ -329,7 +345,7 @@ describe('forumService', () => {
       forumMembersRepositoryMock.checkIfUserSubscribed.mockResolvedValue(1);
       postRepositoryMock.getPosts.mockResolvedValue([]);
 
-      await forumService.getPostsFromForum(forumIdMock, session);
+      await forumService.getPostsFromForum(dtoMock, session);
       expect(postRepositoryMock.getPosts).toHaveBeenCalledWith(expected);
     });
   });

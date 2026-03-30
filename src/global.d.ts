@@ -3,3 +3,8 @@ namespace Express {
     user: string | null;
   }
 }
+
+interface IOrder {
+  direction: 'ASC' | 'DESC';
+  column: string;
+}

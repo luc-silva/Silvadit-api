@@ -24,6 +24,7 @@ import { PostMapper } from '../post/utils/post.mapper';
 import { ForumMembersMapper } from '../forum_members/utils/forum_members.mapper';
 import { ForumAssembler } from './utils/forum.assembler';
 import { ForumMembersOrder } from '../forum_members/utils/forum_members.order';
+import { GetPostsDTO } from '../post/types/post.dto';
 
 @Injectable()
 export class ForumService {
@@ -84,7 +85,6 @@ export class ForumService {
       forum_id: forum.forum_id,
     });
 
-
     return ForumAssembler.toForum(forum, forumStaff);
   }
 
@@ -133,19 +133,18 @@ export class ForumService {
     return await this.forumRepository.banUserFromForum(data);
   }
 
-  async getPostsFromForum(id: string, session: ISession | null) {
-    const forum = await this.forumRepository.getForumById(id as ForumID);
+  async getPostsFromForum(dto: GetPostsDTO, session: ISession | null) {
+    const forum = await this.forumRepository.getForumById(
+      dto.forumId as ForumID,
+    );
     if (!forum) {
       throw new Error('Forum not found.');
     }
 
     const { user } = await this.validatePrivacy(forum, session);
 
-    const mappedFilter = PostMapper.toGetPosts({
-      forumId: id,
-      isNsfw: 'N',
-      user,
-    });
+    const mappedFilter = PostMapper.toGetPosts(dto);
+
     const posts = await this.postRepository.getPosts(mappedFilter);
 
     return posts.map(PostMapper.mapPostDetails);
@@ -165,9 +164,12 @@ export class ForumService {
     await this.validatePrivacy(forum, session);
 
     const params = ForumMembersMapper.toGetForumMembersParams(body);
-    const order = ForumMembersOrder.toMembersFiltersOrder(body)
+    const order = ForumMembersOrder.toMembersFiltersOrder(body);
 
-    const members = await this.forumMembersRepository.getForumMembers(params, order);
+    const members = await this.forumMembersRepository.getForumMembers(
+      params,
+      order,
+    );
 
     return members.map(ForumMembersMapper.toForumMembersOutput);
   }

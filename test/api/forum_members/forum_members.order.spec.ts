@@ -23,7 +23,7 @@ describe('ForumMembersOrder', () => {
       orderField: 'name',
     });
 
-   const expected = {
+    const expected = {
       column: "UA.FIRST_NAME || '' || UA.LAST_NAME",
       direction: 'DESC',
     };
@@ -38,8 +38,8 @@ describe('ForumMembersOrder', () => {
       orderField: 'date',
     });
 
-   const expected = {
-      column: "UA.DATE_CREATED",
+    const expected = {
+      column: 'UA.DATE_CREATED',
       direction: 'ASC',
     };
     const result = ForumMembersOrder.toMembersFiltersOrder(data);
