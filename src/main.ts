@@ -2,11 +2,13 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './api/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ProtectRoutes } from './utils/decorators/protect-routes/PublicDecorator';
+import { HttpExceptionFilter } from './exceptions/filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalGuards(new ProtectRoutes(new Reflector()));
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableCors({
     origin: '*',
