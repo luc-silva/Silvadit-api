@@ -1,8 +1,10 @@
 import {
+  IsArray,
   IsBoolean,
   IsBooleanString,
   IsDate,
   IsEnum,
+  IsNumberString,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -50,7 +52,36 @@ export class UpdatePostDTO {
 
 export class GetPostsDTO {
   @IsString()
-  user_id?: string;
+  userId?: string;
+
+  @IsString()
+  fromUser?: string;
+
+  @IsString()
+  forumId?: string;
+
+  @IsString()
+  postId?: string;
+
+  @IsEnum(['N', 'S'])
+  isNsfw?: IYesNo;
+
+  @IsArray()
+  tags?: string[]
+
+  @IsOptional()
+  orderField?: string;
+
+  @IsEnum(['asc', 'desc'])
+  @IsOptional()
+  orderDirection?: 'asc' | 'desc';
+
+  @IsNumberString()
+  page: string;
+
+  @IsNumberString()
+  itemsPerPage: string;
+
 }
 
 export class IBookmarkPostData {

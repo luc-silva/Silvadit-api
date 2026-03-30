@@ -54,7 +54,7 @@ export class PostRepository implements PostRepositoryBase {
 
     const query = PostQuery.getPosts(filter);
 
-
+    console.log(filter)
     const { rows } = await connection.execute<IPostRaw>(query, filter);
     return rows && rows.length ? rows : [];
   }

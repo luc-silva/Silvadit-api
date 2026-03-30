@@ -1,4 +1,8 @@
-import { CreatePostDTO, UpdatePostDTO } from '~/api/post/types/post.dto';
+import {
+  CreatePostDTO,
+  GetPostsDTO,
+  UpdatePostDTO,
+} from '~/api/post/types/post.dto';
 
 export const createPostRaw = (data?: Partial<IPostRaw>): IPostRaw => {
   return {
@@ -94,29 +98,37 @@ export const createPostUpdateParams = (
 };
 
 export const createGetPostFilter = (
-  data?: Partial<IGetPostsFilter>,
-): IGetPostsFilter => {
+  data?: Partial<IGetPostsParams>,
+): IGetPostsParams => {
   return {
     forum_id: 'ABC',
     nsfw: 'N',
     post_id: 'ABC123',
-    user_id: '2131',
-    itemPerPage: 10,
+    from_user_id: '2131',
+    items_per_page: 10,
     page: 1,
     ...data,
   };
 };
 
+//obsolete
 export const createGetPostUnmappedFilter = (
   data?: IGetPostUnmappedFilter,
 ): IGetPostUnmappedFilter => {
   return {
     forumId: 'ABCFORUM',
-    isNsfw: false,
-    itemsPerPage: 10,
+    itemPerPage: 10,
     page: 1,
     postId: 'ABCA',
     user: null,
+    ...data,
+  };
+};
+
+export const createGetPostDTO = (data?: Partial<GetPostsDTO>): GetPostsDTO => {
+  return {
+    itemsPerPage: '5',
+    page: '1',
     ...data,
   };
 };

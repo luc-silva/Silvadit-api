@@ -6,7 +6,7 @@ export interface PostRepositoryBase {
   updatePost(data: IUpdatePostParams): Promise<void>;
   reactPost(data: IReactPostParams): Promise<void>;
   getTrendingPosts(): Promise<IPostRaw[]>;
-  getPosts(data: Partial<IGetPostsFilter>): Promise<IPostRaw[]>;
+  getPosts(data: IGetPostsParams): Promise<IPostRaw[]>;
   getPostsFromSuggested(): Promise<IPostRaw[]>; 
   getPostDetails(postId: PostID): Promise<IPostRaw| null>;
   bookmarkPost(data: IBookmarkPostParams): Promise<void>;

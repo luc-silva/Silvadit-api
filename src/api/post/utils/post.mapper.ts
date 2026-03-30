@@ -1,4 +1,4 @@
-import { UpdatePostDTO } from '../types/post.dto';
+import { GetPostsDTO, UpdatePostDTO } from '../types/post.dto';
 
 export class PostMapper {
   static mapPostDetails(data: IPostRaw): IPostOutput {
@@ -36,14 +36,16 @@ export class PostMapper {
     };
   }
 
-  static toGetPosts(data: IGetPostUnmappedFilter): IGetPostsFilter {
+  static toGetPosts(data: GetPostsDTO): IGetPostsParams {
     return {
       ...(!!data.forumId && { forum_id: data.forumId }),
       ...(!!data.postId && { post_id: data.postId }),
-      ...(!!data.user && { user_id: data.user.userId }),
-      ...(!!data.isNsfw && { nsfw: data.isNsfw }),
-      page: 1,
-      items_per_page: 10,
+      ...(!!data.fromUser && { user_id: data.fromUser }),
+      ...(!!data.userId && { from_user_id: data.userId }),
+      ...(!!data.tags && data.tags.length && { tags: data.tags }),
+      nsfw: !data.isNsfw ? "N" : data.isNsfw,
+      page: Number(data.page),
+      items_per_page: Number(data.itemsPerPage),
     };
   }
 }

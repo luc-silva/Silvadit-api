@@ -38,7 +38,7 @@ export class PostQuery {
       FROM POSTS P, USER_ACCOUNTS UA
       WHERE RAWTOHEX(P.USER_ID) = RAWTOHEX(UA.USER_ID)  
       ${filter.forum_id ? 'AND RAWTOHEX(P.FORUM_ID) = :forum_id' : ''}
-      ${filter.user_id ? 'AND RAWTOHEX(P.USER_ID) = :user_id' : ''}
+      ${filter.from_user_id ? 'AND RAWTOHEX(P.USER_ID) = :from_user_id' : ''}
       ${filter.post_id ? 'AND RAWTOHEX(P.POST_ID) = :post_id' : ''}
       ${filter.nsfw ? `AND NVL(P.IS_NSFW, 'N') = :nsfw` : ''}
       OFFSET (:items_per_page * (:page - 1)) ROWS FETCH NEXT :items_per_page ROWS ONLY

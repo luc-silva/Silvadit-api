@@ -1,4 +1,5 @@
 import {
+  createGetPostDTO,
   createGetPostFilter,
   createGetPostUnmappedFilter,
   createPostOutput,
@@ -7,6 +8,7 @@ import {
   createPostUpdateParams,
 } from 'test/mock/data/post';
 import { createCompletedUserData } from 'test/mock/data/user';
+import { GetPostsDTO } from '~/api/post/types/post.dto';
 import { PostMapper } from '~/api/post/utils/post.mapper';
 
 describe('Mapper', () => {
@@ -29,20 +31,24 @@ describe('Mapper', () => {
       expect(result).toEqual(expected);
     });
   });
+  /*
+  continuar refactor de post. user_id para pegar posts de amigos. from_user_id para especificar target de post
+  */
 
   describe('getPosts', () => {
     it('Should map correctly', () => {
       const forumIdMock = 'ABC';
-      const expected: IGetPostsFilter = {
+      const expected: IGetPostsParams = {
         forum_id: forumIdMock,
-        user_id: 'ABCEDFGE',
+        from_user_id: 'ABCEDFGE',
         page: 1,
-        items_per_page: 10,
+        items_per_page: 5,
+        nsfw: 'N',
       };
       const mockedUser = createCompletedUserData({ userId: 'ABCEDFGE' });
 
-      const filter = createGetPostUnmappedFilter({
-        user: mockedUser,
+      const filter = createGetPostDTO({
+        userId: mockedUser.userId,
         postId: undefined,
         forumId: forumIdMock,
       });
@@ -53,12 +59,15 @@ describe('Mapper', () => {
     });
 
     it('Should map correctly if params not specified', () => {
-      const expected: IGetPostsFilter = {
+      const expected: IGetPostsParams = {
         items_per_page: 10,
         page: 1,
+        nsfw: 'N',
       };
-
-      const filter = {};
+      const filter: GetPostsDTO = {
+        itemsPerPage: '10',
+        page: '1',
+      };
 
       const result = PostMapper.toGetPosts(filter);
       expect(result).toEqual(expected);

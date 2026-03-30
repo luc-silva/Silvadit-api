@@ -45,13 +45,11 @@ interface IGetPostUnmappedFilter {
 }
 
 interface IGetPostsParams {
-  post_id: string;
-  user_id: string;
-  forum_id: string;
+  post_id?: string;
+  from_user_id?: string;
+  forum_id?: string;
+  tags?: string[];
   nsfw: IYesNo;
   page: number;
   items_per_page: number;
-  //tags: string[];
 }
-
-type IGetPostsFilter = Partial<IGetPostsParams>;
