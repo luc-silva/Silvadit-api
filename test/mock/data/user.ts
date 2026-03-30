@@ -23,7 +23,28 @@ export const createCompletedUserData = (
   };
 };
 
-export const createUserOutput = (data?: Partial<IUserOutput>): IUserOutput => {
+export const createUserDetailsRaw = (
+  data?: Partial<IUserDetailsRaw>,
+): IUserDetailsRaw => {
+  return {
+    country: 'BR',
+    email: 'teste@teste.com',
+    first_name: 'Lucas',
+    last_name: 'Silva',
+    state: 'SP',
+    username: 'teste.teste',
+    date_created: new Date('2025-08-11T18:15:00.281Z'),
+    id: 'ABCEDFGE',
+    followers_total: 0,
+    following_total: 2,
+    is_banned: 'N',
+    ...data,
+  };
+};
+
+export const createUserDetailsOutput = (
+  data?: Partial<IUserDetailsOutput>,
+): IUserDetailsOutput => {
   return {
     country: 'BR',
     email: 'teste@teste.com',
@@ -32,7 +53,29 @@ export const createUserOutput = (data?: Partial<IUserOutput>): IUserOutput => {
     state: 'SP',
     username: 'teste.teste',
     dateCreated: new Date('2025-08-11T18:15:00.281Z'),
-    userId: 'ABCEDFGE',
+    id: 'ABCEDFGE',
+    followersTotal: 0,
+    followingTotal: 2,
+    isBanned: 'N',
+    ...data,
+  };
+};
+
+export const createUserDetailsData = (data?: Partial<IUserData>): IUserData => {
+  return {
+    user: {
+      country: 'BR',
+      email: 'teste@teste.com',
+      firstName: 'Lucas',
+      lastName: 'Silva',
+      state: 'SP',
+      username: 'teste.teste',
+      dateCreated: new Date('2025-08-11T18:15:00.281Z'),
+      id: 'ABCEDFGE',
+      followersTotal: 0,
+      followingTotal: 2,
+      isBanned: 'N',
+    },
     ...data,
   };
 };
@@ -57,7 +100,7 @@ export const createtUserUpdateDetailsParams = (
     last_name: '123',
     username: 'Teste123',
     description: 'Lorem teste',
-    user_id: 'ABC',
+    id: 'ABC',
     ...data,
   };
 };

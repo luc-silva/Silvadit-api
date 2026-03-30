@@ -13,6 +13,7 @@ import {
 import { ForumMembersMapper } from '../forum_members/utils/forum_members.mapper';
 import { UpdateUserDetailsDTO, UpdateUserLocationDTO } from './types/user.dto';
 import { UserMapper } from './utils/user.mapper';
+import { UserAssembler } from './utils/user.assemble';
 
 @Injectable()
 export class UserService {
@@ -33,12 +34,13 @@ export class UserService {
     return await this.userRepository.getUserFollowingAccounts(id as UserID);
   }
 
-  async getUserDetails(login: string): Promise<IUserOutput> {
+  async getUserDetails(login: string): Promise<IUserData> {
     const data = await this.userRepository.getUserDetails(login);
     if (!data) {
       throw new Error('User not found.');
     }
-    return data;
+
+    return UserAssembler.assemble(data);
   }
 
   async updateUserDetails(body: UpdateUserDetailsDTO, session: ISession) {
@@ -77,7 +79,8 @@ export class UserService {
       throw new Error('User not found.');
     }
 
-    const filter: IGetPostsFilter = { user_id: user.userId };
+    //todo: fix it
+    const filter: IGetPostsParams = {  from_user_id: user.userId, items_per_page: 1, nsfw: 'N', page: 1 };
 
     const posts = await this.postRepository.getPosts(filter);
 
@@ -105,7 +108,7 @@ export class UserService {
       throw new Error('User not found.');
     }
 
-    return this.userRepository.getUserFollowingAccounts(data.userId as UserID);
+    return this.userRepository.getUserFollowingAccounts(data.id as UserID);
   }
 
   async getUserSavedPosts(id: string) {

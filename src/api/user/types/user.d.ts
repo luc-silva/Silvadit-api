@@ -14,7 +14,21 @@ interface ICompleteUser {
   username: string;
 }
 
-interface IUserOutput {
+interface IUserDetailsRaw {
+  first_name: string;
+  username: string;
+  last_name: string;
+  country: string;
+  state: string;
+  email: string;
+  date_created: Date;
+  id: string;
+  is_banned: IYesNo;
+  followers_total: number;
+  following_total: number;
+}
+
+interface IUserDetailsOutput {
   firstName: string;
   username: string;
   lastName: string;
@@ -22,7 +36,30 @@ interface IUserOutput {
   state: string;
   email: string;
   dateCreated: Date;
-  userId: string;
+  id: string;
+  isBanned: IYesNo;
+  followersTotal: number;
+  followingTotal: number;
+}
+
+interface IUserData {
+  user: {
+    firstName: string;
+    username: string;
+    lastName: string;
+    country: string;
+    state: string;
+    email: string;
+    dateCreated: Date;
+    id: string;
+    isBanned: IYesNo;
+    followersTotal: number;
+    followingTotal: number;
+  };
+  images?: {
+    profile: string;
+    banner: string;
+  };
 }
 
 type UserID = Branded<string, 'userId'>;
@@ -59,4 +96,4 @@ interface IFollower {
 
 type IActivity = IUserActivity | IPostActivity;
 
-type ISubscribedUser = IFollower & IUserOutput;
+type ISubscribedUser = IFollower & IUserDetailsRaw;

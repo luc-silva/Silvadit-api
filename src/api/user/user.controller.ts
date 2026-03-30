@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Public } from '~/utils/decorators/protect-routes/PublicDecorator';
+import { OptionalAuth, Public } from '~/utils/decorators/protect-routes/PublicDecorator';
 import { ExtractUser } from '~/utils/decorators/extract-user';
 import { UpdateUserDetailsDTO, UpdateUserLocationDTO } from './types/user.dto';
 
@@ -9,25 +9,25 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(':id')
-  @Public()
+  @OptionalAuth()
   async getUserDetails(@Param('id') id: string) {
     return await this.userService.getUserDetails(id);
   }
 
   @Get(':id/followers')
-  @Public()
+  @OptionalAuth()
   async getUserFollowers(@Param('id') id: string) {
     return await this.userService.getUserFollowers(id);
   }
 
   @Get(':id/following/users')
-  @Public()
+  @OptionalAuth()
   async getUserFollowedUsers(@Param('id') id: string) {
     return await this.userService.getUserFollowedUsers(id);
   }
-
+  
   @Get(':id/following/forums')
-  @Public()
+  @OptionalAuth()
   async getUserFollowedForums(@Param('id') id: string) {
     return await this.userService.getUserSubscribedForums(id);
   }

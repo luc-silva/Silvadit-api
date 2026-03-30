@@ -133,6 +133,7 @@ export class UserQuery {
   public static getUserByIdOrUsername() {
     return `
       SELECT
+        RAWTOHEX(UA.USER_ID) "user_id",
         UA.FIRST_NAME "firstName",
         UA.LAST_NAME "lastName",
         UA.USERNAME "username",
@@ -140,10 +141,30 @@ export class UserQuery {
         UA.CITY "city",
         UA.EMAIL "email",
         UA.DATE_CREATED "dateCreated",
-        --UA.DESCRIPTION "description",
-        RAWTOHEX(UA.USER_ID) "userId"
+        UA.DESCRIPTION "description",
+        RAWTOHEX(UA.USER_ID) "userId",
+        ( 
+          SELECT 
+            CASE WHEN
+              COUNT(*) > 3  THEN 'S'
+              ELSE 'N'
+            END
+          FROM BANNED_USERS BU
+          WHERE RAWTOHEX(BU.USER_ID) = RAWTOHEX(UA.USER_ID)
+        ) "is_banned",
+        (
+          SELECT COUNT(*)
+          FROM USER_FOLLOWERS UF
+          WHERE RAWTOHEX(UF.FOLLOWING_USER) = RAWTOHEX(UA.USER_ID)
+        ) "followers_total",
+        (
+          SELECT COUNT(*)
+          FROM USER_FOLLOWERS UF
+          WHERE RAWTOHEX(UF.USER_ID) = RAWTOHEX(UA.USER_ID)
+        ) "following_total"
       FROM USER_ACCOUNTS UA
       WHERE (RAWTOHEX(UA.USER_ID) = :login OR UA.USERNAME = :login)
+        
     `;
   }
 

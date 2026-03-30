@@ -14,7 +14,7 @@ export interface IUpdateUserDetailsParams {
   last_name: string;
   description?: string | null;
   username: string;
-  user_id: string;
+  id: string;
 }
 
 export interface IUpdateUserLocationParams {

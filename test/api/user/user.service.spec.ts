@@ -5,8 +5,10 @@ import {
   createCompletedUserData,
   createtUserUpdateDetailsParams,
   createUpdateUserLocationDTO,
-  createUserOutput,
   createUserUpdateDetailsDTO,
+  createUserDetailsRaw,
+  createUserDetailsOutput,
+  createUserDetailsData,
 } from 'test/mock/data/user';
 import { MockForumMembersRepository } from 'test/mock/repositories/forum_members.repository';
 import { MockPostRepository } from 'test/mock/repositories/post.repository';
@@ -56,45 +58,6 @@ describe('UserService', () => {
     userService = module.get<UserService>(UserService);
   });
 
-  describe('mapper', () => {
-    describe('toUpdateUserDetails', () => {
-      it('Should mapper DTO correctly', () => {
-        const dto = createUserUpdateDetailsDTO();
-        const expected = createtUserUpdateDetailsParams({ user_id: 'ABC' });
-        const user = createCompletedUserData({ userId: 'ABC' });
-
-        const result = UserMapper.toUpdateDetailsParams(dto, user);
-
-        expect(result).toEqual(expected);
-      });
-
-      it('Should mapper DTO correctly if description is not defined', () => {
-        const dto = createUserUpdateDetailsDTO({ description: '' });
-        const expected = createtUserUpdateDetailsParams({
-          description: null,
-          user_id: 'ABC',
-        });
-        const user = createCompletedUserData({ userId: 'ABC' });
-
-        const result = UserMapper.toUpdateDetailsParams(dto, user);
-
-        expect(result).toEqual(expected);
-      });
-    });
-
-    describe('toUpdateUserLocation', () => {
-      it('Should mapper DTO correctly', () => {
-        const dto = createUpdateUserLocationDTO();
-        const user = createCompletedUserData({ userId: 'ABC' });
-        const expected = createUpdateUserLocationParams();
-
-        const result = UserMapper.toUpdateLocationParams(dto, user);
-
-        expect(result).toEqual(expected);
-      });
-    });
-  });
-
   describe('GET - getUserDetails', () => {
     it('should create exception if user has not been found', async () => {
       const userID = 'ABCDEFG!@#';
@@ -106,13 +69,23 @@ describe('UserService', () => {
       );
     });
 
-    it('should return user details correctly', async () => {
+    it('should call repository correctly', async () => {
       const userID = 'ABCDEFG';
 
-      userRepository.getUserDetails.mockResolvedValue(createUserOutput());
+      userRepository.getUserDetails.mockResolvedValue(createUserDetailsRaw());
 
-      await expect(userService.getUserDetails(userID)).resolves;
+      await userService.getUserDetails(userID);
       expect(userRepository.getUserDetails).toHaveBeenCalledWith(userID);
+    });
+
+    it('should return user details correctly', async () => {
+      const userID = 'ABCDEFG';
+      const expected = createUserDetailsData();
+
+      userRepository.getUserDetails.mockResolvedValue(createUserDetailsRaw());
+
+      const result = await userService.getUserDetails(userID);
+      expect(result).toEqual(expected);
     });
   });
 
@@ -128,9 +101,9 @@ describe('UserService', () => {
       );
     });
 
-    it('should list user posts correctly', async () => {
-      const userIdMock = 'ABCDEFG'
-      const postsFilterMock: IGetPostsFilter = {user_id: userIdMock};
+    it('should call user repository correctly', async () => {
+      const userIdMock = 'ABCDEFG';
+      const postsFilterMock: IGetPostsParams = { from_user_id: userIdMock, nsfw: 'N', page: 1, items_per_page: 1 };
 
       userRepository.getUserByIdOrUsername.mockResolvedValue(
         createCompletedUserData({ userId: userIdMock }),
@@ -158,7 +131,7 @@ describe('UserService', () => {
       const userId = 'ABCDEFG';
 
       userRepository.getUserDetails.mockResolvedValue(
-        createUserOutput({ userId }),
+        createUserDetailsRaw({ id: userId }),
       );
 
       forumMembersRepository.getForumsFromUser.mockResolvedValue([]);
@@ -186,7 +159,7 @@ describe('UserService', () => {
       const userId = 'ABCDEFG';
 
       userRepository.getUserDetails.mockResolvedValue(
-        createUserOutput({ userId }),
+        createUserDetailsRaw({ id: userId }),
       );
 
       await expect(userService.getUserFollowedUsers(userId)).resolves;
@@ -218,7 +191,7 @@ describe('UserService', () => {
       const session = createSessionMock();
       const dto = createUserUpdateDetailsDTO();
 
-      const expectedParams = createtUserUpdateDetailsParams({ user_id: 'ABC' });
+      const expectedParams = createtUserUpdateDetailsParams({ id: 'ABC' });
 
       userRepository.getUserByIdOrUsername.mockResolvedValue(
         createCompletedUserData({ userId: 'ABC' }),

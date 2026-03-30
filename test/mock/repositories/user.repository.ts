@@ -12,7 +12,7 @@ export class MockUserRepository implements jest.Mocked<UserRepositoryBase> {
 
   getUserFollowingForums = jest.fn<Promise<IForumRaw[]>, [UserID]>();
 
-  getUserDetails = jest.fn<Promise<IUserOutput | null>, [string]>();
+  getUserDetails = jest.fn<Promise<IUserDetailsRaw | null>, [string]>();
 
   getUserDataByEmail = jest.fn<
     Promise<ICompleteUser | null>,

@@ -47,7 +47,7 @@ export class UserRepository implements UserRepositoryBase {
     const connection = await getConnection();
     const query = UserQuery.getUserByIdOrUsername();
 
-    const { rows } = await connection.execute<IUserOutput>(
+    const { rows } = await connection.execute<IUserDetailsRaw>(
       query,
       { login },
       { outFormat: OUT_FORMAT_OBJECT },

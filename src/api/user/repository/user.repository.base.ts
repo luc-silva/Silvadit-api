@@ -5,7 +5,7 @@ export interface UserRepositoryBase {
 
   getUserFollowingForums(id: UserID): Promise<IForumRaw[]>;
 
-  getUserDetails(login: string): Promise<IUserOutput | null>;
+  getUserDetails(login: string): Promise<IUserDetailsRaw | null>;
 
   getUserDataByEmail(email: ValidatedUserEmail): Promise<ICompleteUser | null>;
 
