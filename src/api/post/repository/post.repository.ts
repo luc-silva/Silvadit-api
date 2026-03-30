@@ -1,9 +1,7 @@
-import { getConnection } from 'src/db';
 import { insertQueryHelper } from 'src/utils/insertQueryHelper';
 import { PostQuery } from './post.query';
-import { updateQueryHelper } from 'src/utils/updateQueryHelper';
 import { PostRepositoryBase } from './post.repository.base';
-import { OUT_FORMAT_OBJECT } from 'oracledb';
+import { getConnection } from '~/db';
 
 export class PostRepository implements PostRepositoryBase {
   async bookmarkPost(data: IBookmarkPostParams): Promise<void> {
@@ -49,7 +47,7 @@ export class PostRepository implements PostRepositoryBase {
     return rows && rows.length ? rows[0] : null;
   }
 
-  async getPosts(filter: IGetPostsFilter): Promise<IPostRaw[]> {
+  async getPosts(filter: IGetPostsParams): Promise<IPostRaw[]> {
     const connection = await getConnection();
 
     const query = PostQuery.getPosts(filter);

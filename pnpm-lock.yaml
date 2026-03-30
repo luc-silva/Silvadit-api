@@ -41,6 +41,12 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
+      kysely:
+        specifier: ^0.28.14
+        version: 0.28.14
+      kysely-oracledb:
+        specifier: ^3.1.2
+        version: 3.1.2(kysely@0.28.14)(oracledb@6.8.0)
       oracledb:
         specifier: ^6.7.1
         version: 6.8.0
@@ -2455,6 +2461,16 @@ packages:
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
+
+  kysely-oracledb@3.1.2:
+    resolution: {integrity: sha512-wT1MrW20+2dCrG676rFo3yxXDJakPU+tSBuke0n52YxGP6efW5+NGynJ/dumHSince7L+dZpfTIctMTlFAgpfA==}
+    peerDependencies:
+      kysely: ~0.28.2
+      oracledb: ^6.7.1
+
+  kysely@0.28.14:
+    resolution: {integrity: sha512-SU3lgh0rPvq7upc6vvdVrCsSMUG1h3ChvHVOY7wJ2fw4C9QEB7X3d5eyYEyULUX7UQtxZJtZXGuT6U2US72UYA==}
+    engines: {node: '>=20.0.0'}
 
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
@@ -6265,6 +6281,15 @@ snapshots:
   kind-of@6.0.3: {}
 
   kleur@3.0.3: {}
+
+  kysely-oracledb@3.1.2(kysely@0.28.14)(oracledb@6.8.0):
+    dependencies:
+      kysely: 0.28.14
+      oracledb: 6.8.0
+    optionalDependencies:
+      prettier: 3.5.3
+
+  kysely@0.28.14: {}
 
   leven@3.1.0: {}
 

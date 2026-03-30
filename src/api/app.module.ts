@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { HomeModule } from './home/home.module';
+import { DbTestModule } from './db-test/db-test.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { HomeModule } from './home/home.module';
     SettingsModule,
     UserModule,
     HomeModule,
+    DbTestModule,
     ConfigModule.forRoot({ isGlobal: true }),
   ],
 })

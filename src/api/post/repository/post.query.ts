@@ -19,7 +19,7 @@ export class PostQuery {
     `;
   }
 
-  public static getPosts(filter: IGetPostsFilter) {
+  public static getPosts(filter: IGetPostsParams) {
     return `
       SELECT 
         P.CONTENT "post_content",

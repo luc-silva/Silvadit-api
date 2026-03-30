@@ -1,10 +1,10 @@
-import { getConnection } from 'src/db';
 import { CommentaryQuery } from './commentary.query';
 import { CommentaryRepositoryBase } from './commentary.repository.base';
 import { insertQueryHelper } from 'src/utils/insertQueryHelper';
 import { updateQueryHelper } from 'src/utils/updateQueryHelper';
 import { Injectable } from '@nestjs/common';
 import { OUT_FORMAT_OBJECT } from 'oracledb';
+import { getConnection } from '~/db';
 
 @Injectable()
 export class CommentaryRepository implements CommentaryRepositoryBase {

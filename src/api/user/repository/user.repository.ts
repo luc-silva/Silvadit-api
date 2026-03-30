@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { getConnection } from 'src/db';
 import { OUT_FORMAT_OBJECT } from 'oracledb';
 import { UserQuery } from './user.query';
 import { ICreateUserParams, IUpdateUserDetailsParams, IUpdateUserLocationParams } from './user.interface';
 import { UserRepositoryBase } from './user.repository.base';
+import { getConnection } from '~/db';
 
 @Injectable()
 export class UserRepository implements UserRepositoryBase {
