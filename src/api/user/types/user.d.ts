@@ -1,3 +1,11 @@
+//resources
+type UserDetailsApiResource = ApiResource<IUserData>;
+type UserFollowersApiResource = ApiResource<IFollower[]>;
+type UserFollowingApiResource = ApiResource<ISubscribedUser[]>;
+type UserSubscribedForumsApiResource = ApiResource<ISubscribedForumOutput[]>;
+type UserActivityApiResource = ApiResource<IActivity[]>;
+type UserPostsApiResource = ApiResource<IPostOutput[]>;
+
 interface ILessDetailedUserData {
   username: string;
   user_id: string;
@@ -67,7 +75,7 @@ type UserID = Branded<string, 'userId'>;
 type ValidatedUserEmail = Branded<string, 'email'>;
 
 interface IUserActivity {
-  type: 'FOLLOW' | 'REACT'; //criar enum
+  type: 'FOLLOW' | 'REACT';
   title: null;
   content: null;
   postId: null;
