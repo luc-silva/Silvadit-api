@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
+import { OptionalAuth, Public } from '~/utils/decorators/protect-routes/PublicDecorator';
 
 export class ProtectRoutes implements CanActivate {
   reflector: Reflector;
@@ -15,7 +16,6 @@ export class ProtectRoutes implements CanActivate {
   canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.get(Public, context.getHandler());
     const isOptional = this.reflector.get(OptionalAuth, context.getHandler());
-
 
     if (isPublic) {
       return true;
@@ -37,8 +37,3 @@ export class ProtectRoutes implements CanActivate {
     return true;
   }
 }
-
-//ajeitar esse guard pra retornar user ou nada
-
-export const Public = Reflector.createDecorator();
-export const OptionalAuth = Reflector.createDecorator();
