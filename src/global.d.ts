@@ -1,6 +1,8 @@
 namespace Express {
   interface Request {
     user: string | null;
+    session?: ISession
+    userData?: ICompleteUser | null
   }
 }
 
